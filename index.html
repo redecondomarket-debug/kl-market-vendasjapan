@@ -3,438 +3,152 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Controle de Vendas – KL Market</title>
+<title>KL Market — Controle de Vendas</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 :root {
-  --navy: #0d1b4b;
-  --navy2: #162d6e;
-  --blue: #1a6bc4;
-  --cyan: #00b4d8;
-  --pink: #e91e8c;
-  --gold: #f5a623;
-  --green: #00c896;
-  --red: #ff4757;
-  --yellow: #ffd32a;
-  --bg: #0a0f1e;
-  --bg2: #111827;
-  --card: #161f35;
-  --card2: #1e2a45;
-  --border: rgba(255,255,255,0.08);
-  --text: #e8eaf6;
-  --muted: #7986ab;
-  --font-head: 'Syne', sans-serif;
-  --font-body: 'DM Sans', sans-serif;
+  --navy:#0d1b4b;--navy2:#162d6e;--blue:#1a6bc4;--cyan:#00b4d8;
+  --pink:#e91e8c;--gold:#f5a623;--green:#00c896;--red:#ff4757;
+  --yellow:#ffd32a;--bg:#0a0f1e;--bg2:#111827;--card:#161f35;
+  --card2:#1e2a45;--border:rgba(255,255,255,0.08);--text:#e8eaf6;
+  --muted:#7986ab;--font-head:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: var(--font-body);
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh;}
 
-/* ── HEADER ── */
-.app-header {
-  background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%);
-  padding: 0 32px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 64px;
-  border-bottom: 1px solid var(--border);
-  position: sticky; top: 0; z-index: 100;
-}
-.app-header h1 {
-  font-family: var(--font-head);
-  font-size: 18px;
-  font-weight: 800;
-  letter-spacing: 1px;
-  color: #fff;
-}
-.app-header h1 span { color: var(--cyan); }
-.header-accent {
-  height: 3px;
-  background: linear-gradient(90deg, var(--pink), var(--cyan), var(--gold));
-  position: absolute; bottom: 0; left: 0; right: 0;
-}
+/* HEADER */
+.app-header{background:linear-gradient(135deg,var(--navy),var(--navy2));padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:64px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;}
+.app-header h1{font-family:var(--font-head);font-size:18px;font-weight:800;letter-spacing:1px;color:#fff;}
+.app-header h1 span{color:var(--cyan);}
+.header-accent{height:3px;background:linear-gradient(90deg,var(--pink),var(--cyan),var(--gold));position:absolute;bottom:0;left:0;right:0;}
 
-/* ── KPIs ── */
-.kpis {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 16px;
-  padding: 24px 32px 0;
-}
-.kpi {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 18px 20px;
-  position: relative;
-  overflow: hidden;
-}
-.kpi::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0; height: 3px;
-  border-radius: 12px 12px 0 0;
-}
-.kpi.k1::before { background: var(--cyan); }
-.kpi.k2::before { background: var(--green); }
-.kpi.k3::before { background: var(--pink); }
-.kpi.k4::before { background: var(--gold); }
-.kpi.k5::before { background: var(--blue); }
-.kpi-label {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 8px;
-}
-.kpi-value {
-  font-family: var(--font-head);
-  font-size: 22px;
-  font-weight: 800;
-  color: #fff;
-}
-.kpi-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+/* TABS */
+.tabs{display:flex;gap:0;padding:0 32px;background:var(--navy);border-bottom:1px solid var(--border);}
+.tab{padding:12px 24px;font-family:var(--font-head);font-size:13px;font-weight:700;letter-spacing:.5px;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;}
+.tab.active{color:var(--cyan);border-bottom-color:var(--cyan);}
+.tab:hover{color:var(--text);}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
 
-/* ── TOOLBAR ── */
-.toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px 32px 12px;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-.toolbar-left { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-.search-box {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 8px 14px;
-  color: var(--text);
-  font-family: var(--font-body);
-  font-size: 13px;
-  outline: none;
-  width: 220px;
-  transition: border-color .2s;
-}
-.search-box:focus { border-color: var(--blue); }
-.search-box::placeholder { color: var(--muted); }
-.filter-select {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 8px 12px;
-  color: var(--text);
-  font-family: var(--font-body);
-  font-size: 13px;
-  outline: none;
-  cursor: pointer;
-}
-.btn {
-  font-family: var(--font-head);
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: .5px;
-  padding: 9px 20px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  transition: all .2s;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.btn-primary { background: var(--blue); color: #fff; }
-.btn-primary:hover { background: #1557a0; transform: translateY(-1px); }
-.btn-success { background: var(--green); color: #000; }
-.btn-success:hover { background: #00a87d; }
-.btn-danger { background: var(--red); color: #fff; font-size: 11px; padding: 5px 10px; }
-.btn-edit { background: var(--card2); color: var(--cyan); font-size: 11px; padding: 5px 10px; border: 1px solid var(--border); }
-.btn-export { background: var(--card); color: var(--gold); border: 1px solid rgba(245,166,35,0.3); }
-.btn-export:hover { background: rgba(245,166,35,0.1); }
+/* KPIs */
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;padding:20px 32px 0;}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px;position:relative;overflow:hidden;}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:12px 12px 0 0;}
+.kpi.k1::before{background:var(--cyan)}.kpi.k2::before{background:var(--green)}
+.kpi.k3::before{background:var(--pink)}.kpi.k4::before{background:var(--gold)}
+.kpi.k5::before{background:var(--blue)}.kpi.k6::before{background:#a855f7}
+.kpi-label{font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.kpi-value{font-family:var(--font-head);font-size:20px;font-weight:800;color:#fff;}
+.kpi-sub{font-size:10px;color:var(--muted);margin-top:3px;}
 
-/* ── TABLE ── */
-.table-wrap {
-  padding: 0 32px 32px;
-  overflow-x: auto;
-}
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 12.5px;
-  min-width: 1600px;
-}
-thead tr {
-  background: var(--navy);
-  position: sticky; top: 64px;
-}
-thead th {
-  padding: 11px 12px;
-  text-align: left;
-  font-family: var(--font-head);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  color: var(--muted);
-  white-space: nowrap;
-  cursor: pointer;
-  user-select: none;
-  border-bottom: 1px solid var(--border);
-}
-thead th:hover { color: var(--cyan); }
-tbody tr {
-  border-bottom: 1px solid var(--border);
-  transition: background .15s;
-}
-tbody tr:hover { background: var(--card2); }
-tbody td {
-  padding: 10px 12px;
-  vertical-align: middle;
-  white-space: nowrap;
-}
+/* TOOLBAR */
+.toolbar{display:flex;align-items:center;justify-content:space-between;padding:16px 32px 10px;gap:12px;flex-wrap:wrap;}
+.toolbar-left{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.search-box{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 14px;color:var(--text);font-family:var(--font-body);font-size:13px;outline:none;width:200px;transition:border-color .2s;}
+.search-box:focus{border-color:var(--blue);}
+.search-box::placeholder{color:var(--muted);}
+.filter-select{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text);font-family:var(--font-body);font-size:12px;outline:none;cursor:pointer;}
+.btn{font-family:var(--font-head);font-size:13px;font-weight:700;letter-spacing:.5px;padding:9px 18px;border-radius:8px;border:none;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;}
+.btn-primary{background:var(--blue);color:#fff;}.btn-primary:hover{background:#1557a0;}
+.btn-success{background:var(--green);color:#000;}.btn-success:hover{background:#00a87d;}
+.btn-danger{background:var(--red);color:#fff;font-size:11px;padding:5px 10px;}
+.btn-edit{background:var(--card2);color:var(--cyan);font-size:11px;padding:5px 10px;border:1px solid var(--border);}
+.btn-export{background:var(--card);color:var(--gold);border:1px solid rgba(245,166,35,0.3);}
 
-/* Status badges */
-.badge {
-  display: inline-block;
-  padding: 3px 10px;
-  border-radius: 20px;
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: .5px;
-  text-transform: uppercase;
-}
-.badge-pendente   { background: rgba(255,215,42,0.15); color: var(--yellow); border: 1px solid rgba(255,215,42,0.3); }
-.badge-producao   { background: rgba(0,180,216,0.15); color: var(--cyan); border: 1px solid rgba(0,180,216,0.3); }
-.badge-pronto     { background: rgba(0,200,150,0.15); color: var(--green); border: 1px solid rgba(0,200,150,0.3); }
-.badge-entregue   { background: rgba(26,107,196,0.15); color: #6eb3f7; border: 1px solid rgba(26,107,196,0.3); }
-.badge-cancelado  { background: rgba(255,71,87,0.15); color: var(--red); border: 1px solid rgba(255,71,87,0.3); }
+/* TABLE */
+.table-wrap{padding:0 32px 32px;overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:12px;min-width:2000px;}
+thead tr{background:var(--navy);position:sticky;top:114px;}
+thead th{padding:10px 11px;text-align:left;font-family:var(--font-head);font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);white-space:nowrap;cursor:pointer;user-select:none;border-bottom:1px solid var(--border);}
+thead th:hover{color:var(--cyan);}
+tbody tr{border-bottom:1px solid var(--border);transition:background .15s;}
+tbody tr:hover{background:var(--card2);}
+tbody td{padding:9px 11px;vertical-align:middle;white-space:nowrap;}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;}
+.badge-pendente{background:rgba(255,215,42,0.15);color:var(--yellow);border:1px solid rgba(255,215,42,0.3);}
+.badge-producao{background:rgba(0,180,216,0.15);color:var(--cyan);border:1px solid rgba(0,180,216,0.3);}
+.badge-pronto{background:rgba(0,200,150,0.15);color:var(--green);border:1px solid rgba(0,200,150,0.3);}
+.badge-entregue{background:rgba(26,107,196,0.15);color:#6eb3f7;border:1px solid rgba(26,107,196,0.3);}
+.badge-cancelado{background:rgba(255,71,87,0.15);color:var(--red);border:1px solid rgba(255,71,87,0.3);}
+.entregue-sim{color:var(--green);font-weight:700;}.entregue-nao{color:var(--muted);}
+.prazo-ok{color:var(--green);font-weight:600;}.prazo-hoje{color:var(--gold);font-weight:700;}
+.prazo-amanha{color:#ffa500;font-weight:700;}.prazo-vencido{color:var(--red);font-weight:700;}.prazo-none{color:var(--muted);}
+.lucro-pos{color:var(--green);font-weight:700;}.lucro-neg{color:var(--red);font-weight:700;}
+.acoes{display:flex;gap:6px;}
 
-.entregue-sim { color: var(--green); font-weight: 700; }
-.entregue-nao { color: var(--muted); }
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s;}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:16px;width:100%;max-width:920px;max-height:92vh;overflow-y:auto;transform:translateY(20px);transition:transform .2s;}
+.modal-overlay.open .modal{transform:translateY(0);}
+.modal-header{background:linear-gradient(135deg,var(--navy),var(--navy2));padding:18px 28px;display:flex;align-items:center;justify-content:space-between;border-radius:16px 16px 0 0;position:sticky;top:0;z-index:10;}
+.modal-header h2{font-family:var(--font-head);font-size:18px;font-weight:800;color:#fff;}
+.btn-close{background:rgba(255,255,255,0.1);border:none;color:#fff;font-size:18px;width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.btn-close:hover{background:rgba(255,255,255,0.2);}
+.modal-body{padding:24px 28px;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.form-group{display:flex;flex-direction:column;gap:5px;}
+.form-group.full{grid-column:1/-1;}.form-group.half{grid-column:span 2;}
+.form-group label{font-size:9px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);}
+.form-group input,.form-group select,.form-group textarea{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;font-family:var(--font-body);color:var(--text);outline:none;transition:border-color .2s;}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--blue);}
+.form-group textarea{resize:vertical;min-height:56px;}
+.computed{background:var(--bg2);border:1px solid rgba(0,200,150,0.3);border-radius:8px;padding:8px 12px;font-size:14px;font-family:var(--font-head);font-weight:800;color:var(--green);}
+.computed.neg{border-color:rgba(255,71,87,0.3);color:var(--red);}
+.modal-footer{padding:14px 28px 22px;display:flex;justify-content:flex-end;gap:10px;border-top:1px solid var(--border);}
+.section-divider{grid-column:1/-1;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--blue);padding:8px 0 2px;border-bottom:1px solid var(--border);margin-bottom:2px;}
 
-.prazo-ok      { color: var(--green); font-weight: 600; }
-.prazo-hoje    { color: var(--gold); font-weight: 700; }
-.prazo-amanha  { color: #ffa500; font-weight: 700; }
-.prazo-vencido { color: var(--red); font-weight: 700; }
-.prazo-none    { color: var(--muted); }
-.lucro-pos { color: var(--green); font-weight: 700; }
-.lucro-neg { color: var(--red); font-weight: 700; }
+/* EMPTY */
+.empty-state{text-align:center;padding:60px 20px;color:var(--muted);}
+.empty-state .icon{font-size:48px;margin-bottom:16px;}
 
-.acoes { display: flex; gap: 6px; }
+/* ALERT */
+#alert-prazo-overlay{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;padding:20px;}
+#alert-prazo-overlay.hidden{display:none;}
+.alert-prazo-box{background:var(--card);border:1px solid rgba(255,71,87,0.4);border-radius:16px;width:100%;max-width:560px;max-height:80vh;overflow-y:auto;box-shadow:0 0 60px rgba(255,71,87,0.2);}
+.alert-prazo-header{background:linear-gradient(135deg,#1a0a0a,#2d0f0f);padding:18px 24px;border-radius:16px 16px 0 0;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,71,87,0.3);}
+.alert-prazo-header h3{font-family:var(--font-head);font-size:16px;font-weight:800;color:var(--red);}
+.alert-prazo-body{padding:20px 24px;}
+.alert-item{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.alert-item.vencido{border-color:rgba(255,71,87,0.4);background:rgba(255,71,87,0.05);}
+.alert-item.hoje{border-color:rgba(255,165,0,0.4);background:rgba(255,165,0,0.05);}
+.alert-item.amanha{border-color:rgba(255,215,42,0.3);background:rgba(255,215,42,0.05);}
+.alert-item-info strong{font-size:13px;color:var(--text);}
+.alert-item-info p{font-size:11px;color:var(--muted);margin-top:2px;}
+.alert-item-tag{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap;}
+.tag-vencido{background:rgba(255,71,87,0.2);color:var(--red);}
+.tag-hoje{background:rgba(255,165,0,0.2);color:#ffa500;}
+.tag-amanha{background:rgba(255,215,42,0.15);color:var(--yellow);}
+.notif-config{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-top:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.notif-config label{font-size:12px;color:var(--muted);}
+.notif-config select{background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:5px 10px;color:var(--text);font-family:var(--font-body);font-size:12px;outline:none;}
+.btn-notif{background:var(--blue);color:#fff;border:none;border-radius:7px;font-family:var(--font-head);font-size:12px;font-weight:700;padding:7px 14px;cursor:pointer;}
 
-/* ── MODAL ── */
-.modal-overlay {
-  position: fixed; inset: 0; z-index: 200;
-  background: rgba(0,0,0,0.7);
-  display: flex; align-items: center; justify-content: center;
-  padding: 20px;
-  opacity: 0; pointer-events: none;
-  transition: opacity .2s;
-}
-.modal-overlay.open { opacity: 1; pointer-events: all; }
-.modal {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  width: 100%;
-  max-width: 860px;
-  max-height: 90vh;
-  overflow-y: auto;
-  transform: translateY(20px);
-  transition: transform .2s;
-}
-.modal-overlay.open .modal { transform: translateY(0); }
-.modal-header {
-  background: linear-gradient(135deg, var(--navy), var(--navy2));
-  padding: 20px 28px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-radius: 16px 16px 0 0;
-  position: sticky; top: 0; z-index: 10;
-}
-.modal-header h2 {
-  font-family: var(--font-head);
-  font-size: 18px;
-  font-weight: 800;
-  color: #fff;
-}
-.btn-close {
-  background: rgba(255,255,255,0.1);
-  border: none;
-  color: #fff;
-  font-size: 18px;
-  width: 32px; height: 32px;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: background .2s;
-}
-.btn-close:hover { background: rgba(255,255,255,0.2); }
-.modal-body { padding: 28px; }
-.form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 16px;
-}
-.form-group { display: flex; flex-direction: column; gap: 6px; }
-.form-group.full { grid-column: 1 / -1; }
-.form-group.half { grid-column: span 2; }
-.form-group label {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 1.4px;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-.form-group input,
-.form-group select,
-.form-group textarea {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 9px 12px;
-  font-size: 13px;
-  font-family: var(--font-body);
-  color: var(--text);
-  outline: none;
-  transition: border-color .2s;
-}
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus { border-color: var(--blue); }
-.form-group textarea { resize: vertical; min-height: 60px; }
-.form-group .computed {
-  background: var(--bg2);
-  border: 1px solid rgba(0,200,150,0.3);
-  border-radius: 8px;
-  padding: 9px 12px;
-  font-size: 14px;
-  font-family: var(--font-head);
-  font-weight: 800;
-  color: var(--green);
-}
-.modal-footer {
-  padding: 16px 28px 24px;
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  border-top: 1px solid var(--border);
-}
-.section-divider {
-  grid-column: 1 / -1;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--blue);
-  padding: 8px 0 2px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 4px;
-}
+/* DASHBOARD */
+.dash-header{padding:20px 32px 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.dash-period{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.dash-period label{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);}
+.dash-period select,.dash-period input{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:7px 12px;color:var(--text);font-family:var(--font-body);font-size:12px;outline:none;}
+.dash-kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;padding:16px 32px 0;}
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:20px 32px 32px;}
+.charts-grid .chart-full{grid-column:1/-1;}
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;}
+.chart-card h3{font-family:var(--font-head);font-size:13px;font-weight:700;color:var(--text);margin-bottom:16px;letter-spacing:.5px;}
+.chart-wrap{position:relative;height:260px;}
+.chart-wrap-sm{position:relative;height:220px;}
 
-/* ── EMPTY STATE ── */
-.empty-state {
-  text-align: center;
-  padding: 60px 20px;
-  color: var(--muted);
-}
-.empty-state .icon { font-size: 48px; margin-bottom: 16px; }
-.empty-state p { font-size: 14px; }
-
-
-/* ── ALERT PRAZO ── */
-#alert-prazo-overlay {
-  position: fixed; inset: 0; z-index: 300;
-  background: rgba(0,0,0,0.8);
-  display: flex; align-items: center; justify-content: center;
-  padding: 20px;
-}
-#alert-prazo-overlay.hidden { display: none; }
-.alert-prazo-box {
-  background: var(--card);
-  border: 1px solid rgba(255,71,87,0.4);
-  border-radius: 16px;
-  width: 100%; max-width: 560px;
-  max-height: 80vh;
-  overflow-y: auto;
-  box-shadow: 0 0 60px rgba(255,71,87,0.2);
-}
-.alert-prazo-header {
-  background: linear-gradient(135deg, #1a0a0a, #2d0f0f);
-  padding: 20px 24px;
-  border-radius: 16px 16px 0 0;
-  display: flex; align-items: center; justify-content: space-between;
-  border-bottom: 1px solid rgba(255,71,87,0.3);
-}
-.alert-prazo-header h3 {
-  font-family: var(--font-head);
-  font-size: 16px; font-weight: 800;
-  color: var(--red);
-  display: flex; align-items: center; gap: 8px;
-}
-.alert-prazo-body { padding: 20px 24px; }
-.alert-item {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 12px 16px;
-  margin-bottom: 10px;
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
-}
-.alert-item.vencido { border-color: rgba(255,71,87,0.4); background: rgba(255,71,87,0.05); }
-.alert-item.hoje    { border-color: rgba(255,165,0,0.4); background: rgba(255,165,0,0.05); }
-.alert-item.amanha  { border-color: rgba(255,215,42,0.3); background: rgba(255,215,42,0.05); }
-.alert-item-info strong { font-size: 13px; color: var(--text); }
-.alert-item-info p { font-size: 11px; color: var(--muted); margin-top: 2px; }
-.alert-item-tag {
-  font-size: 10px; font-weight: 700; padding: 3px 10px;
-  border-radius: 20px; white-space: nowrap;
-}
-.tag-vencido { background: rgba(255,71,87,0.2); color: var(--red); }
-.tag-hoje    { background: rgba(255,165,0,0.2); color: #ffa500; }
-.tag-amanha  { background: rgba(255,215,42,0.15); color: var(--yellow); }
-.notif-config {
-  background: var(--bg2); border: 1px solid var(--border);
-  border-radius: 10px; padding: 14px 16px; margin-top: 14px;
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
-}
-.notif-config label { font-size: 12px; color: var(--muted); }
-.notif-config select {
-  background: var(--card2); border: 1px solid var(--border);
-  border-radius: 6px; padding: 5px 10px;
-  color: var(--text); font-family: var(--font-body); font-size: 12px; outline: none;
-}
-.btn-notif {
-  background: var(--blue); color: #fff;
-  border: none; border-radius: 7px;
-  font-family: var(--font-head); font-size: 12px; font-weight: 700;
-  padding: 7px 14px; cursor: pointer;
-}
-
-/* ── SCROLLBAR ── */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: var(--bg2); }
-::-webkit-scrollbar-thumb { background: var(--card2); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--blue); }
-
-@media (max-width: 900px) {
-  .kpis { grid-template-columns: 1fr 1fr; }
-  .form-grid { grid-template-columns: 1fr 1fr; }
-  .app-header, .toolbar, .table-wrap { padding-left: 16px; padding-right: 16px; }
-  .kpis { padding: 16px 16px 0; }
-}
+/* SCROLLBAR */
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:var(--bg2);}
+::-webkit-scrollbar-thumb{background:var(--card2);border-radius:3px;}
+::-webkit-scrollbar-thumb:hover{background:var(--blue);}
+@media(max-width:900px){.kpis{grid-template-columns:1fr 1fr;}.form-grid{grid-template-columns:1fr 1fr;}.charts-grid{grid-template-columns:1fr;}.app-header,.toolbar,.table-wrap{padding-left:16px;padding-right:16px;}.kpis{padding:16px 16px 0;}}
+@keyframes spin{to{transform:rotate(360deg);}}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <div class="app-header" style="position:relative">
   <h1>KL <span>MARKET</span> — Controle de Vendas</h1>
   <div style="display:flex;gap:10px;align-items:center">
@@ -444,119 +158,173 @@ tbody td {
   <div class="header-accent"></div>
 </div>
 
-<!-- KPIs -->
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('vendas')">📋 Pedidos</div>
+  <div class="tab" onclick="switchTab('dashboard')">📊 Dashboard</div>
+</div>
+
+<!-- ══ ABA PEDIDOS ══ -->
+<div id="tab-vendas" class="tab-content active">
+
 <div class="kpis">
   <div class="kpi k1">
-    <div class="kpi-label">Total de Pedidos <span id="filter-indicator" style="display:none;color:var(--gold);font-size:9px">● FILTRADO</span></div>
+    <div class="kpi-label">Pedidos <span id="filter-indicator" style="display:none;color:var(--gold);font-size:8px">● FILTRADO</span></div>
     <div class="kpi-value" id="kpi-pedidos">0</div>
     <div class="kpi-sub">registros</div>
   </div>
   <div class="kpi k2">
-    <div class="kpi-label">Faturamento Total</div>
+    <div class="kpi-label">Faturamento</div>
     <div class="kpi-value" id="kpi-faturamento">R$ 0</div>
     <div class="kpi-sub">preço de venda</div>
   </div>
   <div class="kpi k3">
-    <div class="kpi-label">Lucro Total</div>
+    <div class="kpi-label">Lucro Líquido</div>
     <div class="kpi-value" id="kpi-lucro">R$ 0</div>
-    <div class="kpi-sub">após custos e impostos</div>
+    <div class="kpi-sub">após todos os custos</div>
   </div>
   <div class="kpi k4">
+    <div class="kpi-label">Margem Líquida</div>
+    <div class="kpi-value" id="kpi-margem">0%</div>
+    <div class="kpi-sub">lucro / faturamento</div>
+  </div>
+  <div class="kpi k5">
     <div class="kpi-label">Ticket Médio</div>
     <div class="kpi-value" id="kpi-ticket">R$ 0</div>
     <div class="kpi-sub">por pedido</div>
   </div>
-  <div class="kpi k5">
-    <div class="kpi-label">Pedidos Pendentes</div>
+  <div class="kpi" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px;position:relative;overflow:hidden;">
+    <div style="position:absolute;top:0;left:0;right:0;height:3px;border-radius:12px 12px 0 0;background:#f59e0b;"></div>
+    <div class="kpi-label">Pendentes</div>
     <div class="kpi-value" id="kpi-pendentes">0</div>
     <div class="kpi-sub">aguardando</div>
   </div>
 </div>
 
-<!-- TOOLBAR -->
 <div class="toolbar">
   <div class="toolbar-left">
-    <input class="search-box" type="text" id="search" placeholder="🔍 Buscar cliente, produto, pedido..." oninput="renderTable()">
+    <input class="search-box" type="text" id="search" placeholder="🔍 Buscar..." oninput="renderTable()">
     <select class="filter-select" id="filter-status" onchange="renderTable()">
       <option value="">Todos os status</option>
-      <option value="Pendente">Pendente</option>
-      <option value="Em Produção">Em Produção</option>
-      <option value="Pronto">Pronto</option>
-      <option value="Entregue">Entregue</option>
-      <option value="Cancelado">Cancelado</option>
+      <option>Pendente</option><option>Em Produção</option>
+      <option>Pronto</option><option>Entregue</option><option>Cancelado</option>
     </select>
     <select class="filter-select" id="filter-pagamento" onchange="renderTable()">
-      <option value="">Todos os pagamentos</option>
-      <option value="PIX">PIX</option>
-      <option value="Dinheiro">Dinheiro</option>
-      <option value="Cartão de Crédito">Cartão de Crédito</option>
-      <option value="Cartão de Débito">Cartão de Débito</option>
-      <option value="Boleto">Boleto</option>
-      <option value="A Prazo">A Prazo</option>
+      <option value="">Todos pagamentos</option>
+      <option>PIX</option><option>Dinheiro</option>
+      <option>Cartão de Crédito</option><option>Cartão de Débito</option>
+      <option>Boleto</option><option>A Prazo</option>
     </select>
     <select class="filter-select" id="filter-entregue" onchange="renderTable()">
       <option value="">Todos</option>
-      <option value="Sim">Entregues</option>
-      <option value="Não">Não entregues</option>
+      <option value="Sim">Entregues</option><option value="Não">Não entregues</option>
     </select>
-    <select class="filter-select" id="filter-designer" onchange="renderTable()">
-      <option value="">Todos designers</option>
-    </select>
-    <select class="filter-select" id="filter-produto" onchange="renderTable()">
-      <option value="">Todos produtos</option>
-    </select>
+    <select class="filter-select" id="filter-designer" onchange="renderTable()"><option value="">Todos designers</option></select>
+    <select class="filter-select" id="filter-produto" onchange="renderTable()"><option value="">Todos produtos</option></select>
     <select class="filter-select" id="filter-periodo" onchange="togglePeriodo()">
-      <option value="">Todo período</option>
-      <option value="hoje">Hoje</option>
-      <option value="mes">Este mês</option>
-      <option value="custom">Personalizado</option>
+      <option value="">Todo período</option><option value="hoje">Hoje</option>
+      <option value="mes">Este mês</option><option value="custom">Personalizado</option>
     </select>
-    <div id="custom-periodo" style="display:none;gap:6px;align-items:center;display:none">
+    <div id="custom-periodo" style="display:none;gap:6px;align-items:center">
       <input type="date" id="filter-de" class="search-box" style="width:130px" onchange="renderTable()">
       <span style="color:var(--muted);font-size:12px">até</span>
       <input type="date" id="filter-ate" class="search-box" style="width:130px" onchange="renderTable()">
     </div>
   </div>
   <div style="display:flex;gap:10px">
-    <button class="btn btn-export" onclick="exportCSV()">⬇ Exportar CSV</button>
+    <button class="btn btn-export" onclick="exportCSV()">⬇ CSV</button>
     <button class="btn btn-primary" onclick="abrirModal()">＋ Novo Pedido</button>
   </div>
 </div>
 
-<!-- TABLE -->
 <div class="table-wrap">
-  <table id="main-table">
-    <thead>
-      <tr>
-        <th onclick="sortBy('numero')">Nº Pedido ↕</th>
-        <th onclick="sortBy('numeroInterno')">🗂 Nº Interno ↕</th>
-        <th onclick="sortBy('data')">Data ↕</th>
-        <th onclick="sortBy('prazoProd')">📅 Prod. ↕</th>
-        <th onclick="sortBy('prazoEntrega')">🚚 Entrega ↕</th>
-        <th onclick="sortBy('cliente')">Cliente ↕</th>
-        <th>Produto</th>
-        <th>Tamanho</th>
-        <th onclick="sortBy('quantidade')">Qtd ↕</th>
-        <th onclick="sortBy('precoCusto')">Custo ↕</th>
-        <th onclick="sortBy('precoVenda')">Venda ↕</th>
-        <th>Imposto %</th>
-        <th>Taxa Cartão %</th>
-        <th onclick="sortBy('lucro')">Lucro ↕</th>
-        <th>Pagamento</th>
-        <th>Designer</th>
-        <th>Status</th>
-        <th>Envio</th>
-        <th>Entregue</th>
-        <th>Obs</th>
-        <th>Ações</th>
-      </tr>
-    </thead>
-    <tbody id="table-body">
-    </tbody>
+  <table>
+    <thead><tr>
+      <th onclick="sortBy('numero')">Nº ↕</th>
+      <th onclick="sortBy('numeroInterno')">🗂 Interno ↕</th>
+      <th onclick="sortBy('data')">Data ↕</th>
+      <th onclick="sortBy('prazoProd')">📅 Prod ↕</th>
+      <th onclick="sortBy('prazoEntrega')">🚚 Entrega ↕</th>
+      <th onclick="sortBy('cliente')">Cliente ↕</th>
+      <th>Produto</th><th>Tamanho</th>
+      <th onclick="sortBy('quantidade')">Qtd ↕</th>
+      <th onclick="sortBy('precoCusto')">Custo ↕</th>
+      <th onclick="sortBy('precoVenda')">Venda ↕</th>
+      <th>Imp%</th><th>Taxa%</th>
+      <th>Desp.Designer</th>
+      <th>Frete Real</th><th>Frete Cobrado</th>
+      <th onclick="sortBy('margemBruta')">M.Bruta ↕</th>
+      <th onclick="sortBy('lucro')">Lucro Líq ↕</th>
+      <th onclick="sortBy('margemLiquida')">M.Líq% ↕</th>
+      <th>Pagamento</th><th>Designer</th>
+      <th>Status</th><th>Envio</th><th>Entregue</th><th>Obs</th><th>Ações</th>
+    </tr></thead>
+    <tbody id="table-body"></tbody>
   </table>
   <div id="empty-state" class="empty-state" style="display:none">
     <div class="icon">📦</div>
     <p>Nenhum pedido encontrado.<br>Clique em <strong>+ Novo Pedido</strong> para começar.</p>
+  </div>
+</div>
+</div>
+
+<!-- ══ ABA DASHBOARD ══ -->
+<div id="tab-dashboard" class="tab-content">
+  <div class="dash-header">
+    <h2 style="font-family:var(--font-head);font-size:18px;color:#fff">📊 Dashboard</h2>
+    <div class="dash-period">
+      <label>Período:</label>
+      <select id="dash-periodo" onchange="toggleDashPeriodo()">
+        <option value="7">Últimos 7 dias</option>
+        <option value="15" selected>Últimos 15 dias</option>
+        <option value="30">Últimos 30 dias</option>
+        <option value="mes">Este mês</option>
+        <option value="custom">Personalizado</option>
+      </select>
+      <div id="dash-custom" style="display:none;gap:6px;align-items:center;display:none">
+        <input type="date" id="dash-de" class="filter-select" onchange="renderDashboard()">
+        <span style="color:var(--muted);font-size:12px">até</span>
+        <input type="date" id="dash-ate" class="filter-select" onchange="renderDashboard()">
+      </div>
+    </div>
+  </div>
+
+  <div class="dash-kpis">
+    <div class="kpi k1"><div class="kpi-label">Pedidos</div><div class="kpi-value" id="d-pedidos">0</div></div>
+    <div class="kpi k2"><div class="kpi-label">Faturamento</div><div class="kpi-value" id="d-fat">R$0</div></div>
+    <div class="kpi k3"><div class="kpi-label">Lucro Líquido</div><div class="kpi-value" id="d-lucro">R$0</div></div>
+    <div class="kpi k4"><div class="kpi-label">Margem Líquida</div><div class="kpi-value" id="d-margem">0%</div></div>
+    <div class="kpi k5"><div class="kpi-label">Ticket Médio</div><div class="kpi-value" id="d-ticket">R$0</div></div>
+  </div>
+
+  <div class="charts-grid">
+    <div class="chart-card chart-full">
+      <h3>💰 Faturamento vs Lucro (por dia)</h3>
+      <div class="chart-wrap"><canvas id="chart-fatLucro"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>🏆 Top 6 Produtos Mais Vendidos</h3>
+      <div class="chart-wrap"><canvas id="chart-produtos"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>💳 Métodos de Pagamento</h3>
+      <div class="chart-wrap"><canvas id="chart-pagamento"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>🎨 Pedidos por Designer</h3>
+      <div class="chart-wrap"><canvas id="chart-designer-qtd"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>💸 Despesa por Designer</h3>
+      <div class="chart-wrap"><canvas id="chart-designer-desp"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>📦 Status dos Pedidos</h3>
+      <div class="chart-wrap"><canvas id="chart-status"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>🚚 Formas de Envio</h3>
+      <div class="chart-wrap"><canvas id="chart-envio"></canvas></div>
+    </div>
   </div>
 </div>
 
@@ -569,133 +337,64 @@ tbody td {
     </div>
     <div class="modal-body">
       <div class="form-grid">
-
         <div class="section-divider">📋 Identificação</div>
-
-        <div class="form-group">
-          <label>Nº Pedido (Auto)</label>
-          <input type="text" id="f-numero" placeholder="Ex: 001">
-        </div>
-        <div class="form-group">
-          <label>🗂 Nº Pedido Sistema Interno</label>
-          <input type="text" id="f-numero-interno" placeholder="Ex: SI-2026-001">
-        </div>
-        <div class="form-group">
-          <label>Data do Pedido</label>
-          <input type="date" id="f-data">
-        </div>
-        <div class="form-group">
-          <label>🔧 Dias Úteis de Produção</label>
-          <input type="number" id="f-dias-prod" min="1" max="60" placeholder="Ex: 3" oninput="calcPrazos()">
-        </div>
-        <div class="form-group">
-          <label>📅 Data Limite de Produção</label>
-          <input type="date" id="f-prazo-prod" oninput="recalcEntrega()">
-        </div>
-        <div class="form-group">
-          <label>🚚 Dias Úteis de Entrega</label>
-          <input type="number" id="f-dias-entrega" min="1" max="30" placeholder="Ex: 2" oninput="calcPrazos()">
-        </div>
-        <div class="form-group">
-          <label>📦 Data Limite de Entrega</label>
-          <input type="date" id="f-prazo-entrega">
-        </div>
-        <div class="form-group">
-          <label>Cliente</label>
-          <input type="text" id="f-cliente" placeholder="Nome do cliente">
-        </div>
+        <div class="form-group"><label>Nº Pedido (Auto)</label><input type="text" id="f-numero"></div>
+        <div class="form-group"><label>🗂 Nº Sistema Interno</label><input type="text" id="f-numero-interno" placeholder="SI-2026-001"></div>
+        <div class="form-group"><label>Data do Pedido</label><input type="date" id="f-data"></div>
+        <div class="form-group"><label>🔧 Dias Úteis Produção</label><input type="number" id="f-dias-prod" min="1" max="60" placeholder="Ex: 3" oninput="calcPrazos()"></div>
+        <div class="form-group"><label>📅 Data Limite Produção</label><input type="date" id="f-prazo-prod" oninput="recalcEntrega()"></div>
+        <div class="form-group"><label>🚚 Dias Úteis Entrega</label><input type="number" id="f-dias-entrega" min="1" max="30" placeholder="Ex: 2" oninput="calcPrazos()"></div>
+        <div class="form-group"><label>📦 Data Limite Entrega</label><input type="date" id="f-prazo-entrega"></div>
+        <div class="form-group"><label>Cliente</label><input type="text" id="f-cliente" placeholder="Nome do cliente"></div>
 
         <div class="section-divider">🛍 Produto</div>
-
-        <div class="form-group half">
-          <label>Produto</label>
+        <div class="form-group half"><label>Produto</label>
           <div id="f-produto-cell">
-            <select id="f-produto-select" onchange="checkManualProduto()" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;font-family:var(--font-body);color:var(--text);outline:none;">
+            <select id="f-produto-select" onchange="checkManualProduto()" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;font-family:var(--font-body);color:var(--text);outline:none;">
               <option value="">Selecione o produto...</option>
             </select>
           </div>
         </div>
-        <div class="form-group">
-          <label>Tamanho / Especificação</label>
-          <input type="text" id="f-tamanho" placeholder="Ex: 2,0m x 0,8m">
-        </div>
-        <div class="form-group">
-          <label>Quantidade</label>
-          <input type="number" id="f-quantidade" value="1" min="1" oninput="calcLucro()">
-        </div>
+        <div class="form-group"><label>Tamanho / Especificação</label><input type="text" id="f-tamanho" placeholder="Ex: 2,0m x 0,8m"></div>
+        <div class="form-group"><label>Quantidade</label><input type="number" id="f-quantidade" value="1" min="1" oninput="calcLucro()"></div>
 
         <div class="section-divider">💰 Financeiro</div>
-
-        <div class="form-group">
-          <label>Preço de Custo (R$)</label>
-          <input type="number" id="f-custo" placeholder="0,00" step="0.01" oninput="calcLucro()">
-        </div>
-        <div class="form-group">
-          <label>Preço de Venda (R$)</label>
-          <input type="number" id="f-venda" placeholder="0,00" step="0.01" oninput="calcLucro()">
-        </div>
-        <div class="form-group">
-          <label>Imposto (%)</label>
-          <input type="number" id="f-imposto" value="4" step="0.1" oninput="calcLucro()">
-        </div>
-        <div class="form-group">
-          <label>Taxa Máquina Cartão (%)</label>
-          <input type="number" id="f-taxa" value="0" step="0.1" oninput="calcLucro()">
-        </div>
-        <div class="form-group">
-          <label>Método de Pagamento</label>
-          <select id="f-pagamento" onchange="calcLucro()">
-            <option value="PIX">PIX</option>
-            <option value="Dinheiro">Dinheiro</option>
-            <option value="Cartão de Crédito">Cartão de Crédito</option>
-            <option value="Cartão de Débito">Cartão de Débito</option>
-            <option value="Boleto">Boleto</option>
-            <option value="A Prazo">A Prazo</option>
+        <div class="form-group"><label>Preço de Custo (R$)</label><input type="number" id="f-custo" placeholder="0.00" step="0.01" oninput="calcLucro()"></div>
+        <div class="form-group"><label>Preço de Venda (R$)</label><input type="number" id="f-venda" placeholder="0.00" step="0.01" oninput="calcLucro()"></div>
+        <div class="form-group"><label>Imposto (%)</label><input type="number" id="f-imposto" value="4" step="0.1" oninput="calcLucro()"></div>
+        <div class="form-group"><label>Taxa Cartão (%)</label><input type="number" id="f-taxa" value="0" step="0.1" oninput="calcLucro()"></div>
+        <div class="form-group"><label>💸 Despesa Designer (R$)</label><input type="number" id="f-desp-designer" value="0" step="0.01" oninput="calcLucro()" placeholder="0.00"></div>
+        <div class="form-group"><label>🚚 Frete Real (R$)</label><input type="number" id="f-frete-real" value="0" step="0.01" oninput="calcLucro()" placeholder="0.00"></div>
+        <div class="form-group"><label>📦 Frete Cobrado do Cliente (R$)</label><input type="number" id="f-frete-cobrado" value="0" step="0.01" oninput="calcLucro()" placeholder="0.00"></div>
+        <div class="form-group"><label>Método de Pagamento</label>
+          <select id="f-pagamento">
+            <option>PIX</option><option>Dinheiro</option>
+            <option>Cartão de Crédito</option><option>Cartão de Débito</option>
+            <option>Boleto</option><option>A Prazo</option>
           </select>
         </div>
-        <div class="form-group">
-          <label>Lucro Calculado (R$)</label>
-          <div class="computed" id="f-lucro-display">R$ 0,00</div>
-        </div>
+        <div class="form-group"><label>Margem Bruta</label><div class="computed" id="f-margem-bruta-display">R$ 0,00</div></div>
+        <div class="form-group"><label>💰 Lucro Líquido</label><div class="computed" id="f-lucro-display">R$ 0,00</div></div>
+        <div class="form-group"><label>Margem Líquida %</label><div class="computed" id="f-margem-liq-display">0%</div></div>
 
         <div class="section-divider">🚚 Logística</div>
-
-        <div class="form-group">
-          <label>Designer Responsável</label>
-          <input type="text" id="f-designer" placeholder="Nome do designer">
-        </div>
-        <div class="form-group">
-          <label>Status</label>
+        <div class="form-group"><label>Designer Responsável</label><input type="text" id="f-designer" placeholder="Nome do designer"></div>
+        <div class="form-group"><label>Status</label>
           <select id="f-status">
-            <option value="Pendente">Pendente</option>
-            <option value="Em Produção">Em Produção</option>
-            <option value="Pronto">Pronto</option>
-            <option value="Entregue">Entregue</option>
-            <option value="Cancelado">Cancelado</option>
+            <option>Pendente</option><option>Em Produção</option>
+            <option>Pronto</option><option>Entregue</option><option>Cancelado</option>
           </select>
         </div>
-        <div class="form-group">
-          <label>Forma de Envio</label>
+        <div class="form-group"><label>Forma de Envio</label>
           <select id="f-envio">
-            <option value="Retirada">Retirada</option>
-            <option value="Motoboy">Motoboy</option>
-            <option value="Correios">Correios</option>
-            <option value="Transportadora">Transportadora</option>
-            <option value="Entrega Própria">Entrega Própria</option>
+            <option>Retirada</option><option>Motoboy</option>
+            <option>Correios</option><option>Transportadora</option><option>Entrega Própria</option>
           </select>
         </div>
-        <div class="form-group">
-          <label>Entregue?</label>
-          <select id="f-entregue">
-            <option value="Não">Não</option>
-            <option value="Sim">Sim</option>
-          </select>
+        <div class="form-group"><label>Entregue?</label>
+          <select id="f-entregue"><option value="Não">Não</option><option value="Sim">Sim</option></select>
         </div>
-        <div class="form-group full">
-          <label>Observação</label>
-          <textarea id="f-obs" placeholder="Informações adicionais, arte, prazo..."></textarea>
-        </div>
-
+        <div class="form-group full"><label>Observação</label><textarea id="f-obs" placeholder="Informações adicionais..."></textarea></div>
       </div>
     </div>
     <div class="modal-footer">
@@ -704,923 +403,6 @@ tbody td {
     </div>
   </div>
 </div>
-
-<script>
-const produtos = [
-  "✏️ DIGITAR MANUALMENTE",
-  "--- ABADÁS ---",
-  "Abadá Personalizado",
-  "--- ADESIVOS ---",
-  "Adesivo Digital – Formato Personalizado Impressão Digital 4x0 Ultra-HD",
-  "Adesivo Digital Recorte Personalizado – Impressão Digital 4x0 Ultra-HD Espessura 0,80",
-  "Adesivo UV",
-  "Adesivo UV Recorte Personalizado – Formato Personalizado Impressão UV 4x0 Ultra-HD 0,80 Micras",
-  "Rótulo BOPP – Largura até 45cm 4 Cores BOPP 120g Corte Retangular / Cartela",
-  "--- BACKDROP ---",
-  "Backdrop Dupla-Face Completo 2000x1000mm – 2M x 1M 4x4 Cores Oxford HD Tubos Alumínio",
-  "Backdrop Dupla-Face Completo 2000x1400mm – 2M x 1,40M 4x4 Cores Oxford HD Dupla-Face",
-  "Backdrop Dupla-Face Completo 2000x2000mm – Quadrado Alumínio Impressão Ultra-HD Tecido Oxford HD",
-  "Backdrop Dupla-Face Completo 3000x2000mm – Retangular Alumínio Impressão Ultra-HD Tecido Oxford HD",
-  "Backdrop Dupla-Face Completo 4000x2000mm – Retangular Alumínio Impressão Ultra-HD Tecido Oxford HD",
-  "Backdrop Dupla-Face Estrutura 2000x1000mm – Retangular Alumínio Desmontável",
-  "Backdrop Dupla-Face Estrutura 2000x1400mm – Retangular Alumínio Desmontável",
-  "Backdrop Dupla-Face Estrutura 2000x2000mm – Quadrado Alumínio Desmontável",
-  "Backdrop Dupla-Face Estrutura 3000x2000mm – Retangular Alumínio Desmontável",
-  "Backdrop Dupla-Face Estrutura 4000x2000mm – Retangular Alumínio Desmontável",
-  "Backdrop Tecido Dupla-Face 2000x1000mm – Retangular 4x4 Cores Tecido Oxford HD",
-  "Backdrop Tecido Dupla-Face 2000x1400mm – Retangular 4x4 Cores Tecido Oxford HD",
-  "Backdrop Tecido Dupla-Face 2000x2000mm – Quadrado 4x4 Cores Tecido Oxford HD",
-  "Backdrop Tecido Dupla-Face 3000x2000mm – Retangular 4x4 Cores Tecido Oxford HD",
-  "Backdrop Tecido Dupla-Face 4000x2000mm – Retangular 4x4 Cores Tecido Oxford HD",
-  "Backdrop Tecido Face Única Tamanho Personalizado – 4x0 Ultra-HD Tecido Oxford HD Única-Face",
-  "Backdrop Tecido Face Única 1450x1450mm – Quadrado 4x0 Tecido Oxford HD",
-  "Backdrop Tecido Face Única 2000x1450mm – 4x0 Tecido Oxford HD",
-  "Backdrop Tecido Face Única 2000x2000mm – Quadrado 4x0 Tecido Oxford HD",
-  "Backdrop Tecido Face Única 3000x1450mm – 4x0 Tecido Oxford HD",
-  "Backdrop Tecido Face Única 3000x2900mm – 4x0 Tecido Oxford HD",
-  "Backdrop Tecido Face Única 4000x2000mm – 4x0 Tecido Oxford HD",
-  "Backdrop Tecido Face Única 5000x2900mm – 4x0 Tecido Oxford HD",
-  "--- BANDEIRAS ---",
-  "Bandeira do Brasil – 1,40M x 1,0M 4x0 Ultra-HD Epson 100% Poliéster Corte a Laser",
-  "Bandeira Dupla-Face Personalizada",
-  "Bandeira Face Única Personalizada HD – Única-Face 4x0 Tecido Oxford HD",
-  "Bandeira Face Única Personalizada HD (por m²) – até 1,40M Tecido Oxford HD",
-  "--- BANNER / FAIXA ---",
-  "Banner/Faixa Personalizado – Lona 340gr Impressão Solvente ou UV (por m²)",
-  "Banner/Faixa 70cm – Largura 70cm Lona 340gr",
-  "Banner/Faixa 1,0m – Largura 1,0m Lona 340gr",
-  "Banner/Faixa 1,40m – Largura 1,40m Lona 340gr",
-  "Eco Banner",
-  "Eco Faixa",
-  "--- BASE WIND BANNER ---",
-  "Base Wind Banner P/M – 35x35x9cm Enchimento até 9kg Polietileno",
-  "Base Wind Banner G/GG – 43x43x14cm Enchimento até 13kg Polietileno",
-  "Base para Wind Banner Fibra",
-  "Base Guarda Sol e Ombrelone",
-  "--- BRINDES ---",
-  "Balde de Gelo Cristal – 21x24x15cm 4 Cores + Branco + Verniz Ultra HD Acrílico 5L",
-  "Caneca Cerâmica – 83x96mm 4 Cores + Branco + Verniz Ultra-HD DTF UV Cerâmica 325ml",
-  "Copo Quencher – 150x270mm 4x0 DTF UV Capacidade 1 Litro",
-  "Copo Térmico – 171x91mm 4 Cores + Branco + Verniz Ultra HD Aço Inox 500ml",
-  "Copo Térmico com Caixa de Som – 180x95mm 4C+Branco+Verniz Bluetooth 420ml",
-  "Garrafa Inox 500ml – 230x70x70mm 4 Cores + Branco + Verniz Ultra HD Aço Inox DTF UV",
-  "Garrafa Térmica com Temperatura – 230x70x70mm 4C+Branco+Verniz Ultra HD Inox 500ml",
-  "Garrafinha Infantil – 200x70mm 4C+Branco+Verniz Ultra HD Canudo Embutido Silicone 600ml",
-  "--- CAMA | MESA | BANHO ---",
-  "Cama | Mesa | Banho Personalizado",
-  "Fronha Personalizada",
-  "Refil Almofada",
-  "Refil Travesseiro",
-  "Toalha de Banho Personalizada",
-  "Toalha de Rosto Personalizada",
-  "Toalha de Mesa Personalizada",
-  "--- CAPA ---",
-  "Capa Almofada Personalizada",
-  "Capa de Antena Personalizada",
-  "Capa de Gradil 2000x950mm Dupla-Face – Tecido Ultra Sport 92% Poliéster",
-  "Capa de Gradil 2000x1250mm Dupla-Face – Tecido Ultra Sport 92% Poliéster",
-  "Capa de Gradil 3000x950mm Dupla-Face – Tecido Ultra Sport 92% Poliéster",
-  "Capa de Gradil 3000x1250mm Dupla-Face – Tecido Ultra Sport 92% Poliéster",
-  "Capa para Malas P – 50x32cm Impressão Ultra-HD Epson Active UV50+ 0,180kg/m²",
-  "Capa para Malas M – 58x40cm Impressão Ultra-HD Epson Active UV50+ 0,180kg/m²",
-  "Capa para Malas G – 65x42cm Impressão Ultra-HD Epson Active UV50+ 0,180kg/m²",
-  "Capa Porta Decorativa Personalizada",
-  "--- CAMISETAS FEMININAS ---",
-  "Camiseta Dry Fit Feminina – 100% Poliéster Impressão Total Ultra-HD",
-  "Camiseta Helanca Feminina – Helanca Plus 0,120 G/M2 100% Poliéster",
-  "Camiseta Polo Feminina – DTF Piquet 50% Algodão / 50% Poliéster",
-  "Camiseta Térmica Feminina – Thermo Dry 92,7% Poliéster / 7,5% Elastano",
-  "Camiseta UV50+ Feminina – Malha Active 92,5% Poliéster / 7,5% Elastano",
-  "--- CAMISETAS INFANTIS ---",
-  "Camiseta Dry Fit Infantil Feminina – 100% Poliéster Impressão Total Ultra-HD",
-  "Camiseta Dry Fit Infantil Masculina – 100% Poliéster Impressão Total Ultra-HD",
-  "Camiseta Helanca Plus Feminina Infantil – 0,120 G/M2 100% Poliéster",
-  "Camiseta Helanca Infantil Masculina – Helanca Plus 0,120 G/M2 100% Poliéster",
-  "Camiseta Térmica Infantil Feminina – Thermo Dry 92,7% Poliéster / 7,5% Elastano",
-  "Camiseta Térmica Infantil Masculina – Thermo Dry 92,7% Poliéster / 7,5% Elastano",
-  "Camiseta UV50+ Feminina Infantil – Malha Active 92,5% Poliéster / 7,5% Elastano",
-  "Camiseta UV50+ Infantil Masculina – Malha Active 92,5% Poliéster / 7,5% Elastano",
-  "--- CAMISETAS MASCULINAS ---",
-  "Camiseta Dry Fit Masculina – 100% Poliéster Impressão Total Ultra-HD",
-  "Camiseta Helanca Masculina – Helanca Plus 0,120 G/M2 100% Poliéster",
-  "Camiseta Polo Masculina – DTF Piquet 50% Algodão / 50% Poliéster",
-  "Camiseta Térmica Masculina – Thermo Dry 92,7% Poliéster / 7,5% Elastano",
-  "Camiseta UV50+ Masculina – Malha Active 92,5% Poliéster / 7,5% Elastano",
-  "Camiseta UV50+ Manga Longa Masculina – 92,7% Poliéster / 7,5% Elastano",
-  "Camiseta Térmica Manga Longa Masculina – Thermo Dry 92,7% Poliéster",
-  "Camiseta Helanca Manga Longa Masculina – Helanca Plus 100% Poliéster",
-  "Camiseta Terceirão – Personalizada 4x0 Ultra-HD Epson",
-  "--- CAMISETAS OUTRAS ---",
-  "Camiseta Algodão – Masc/Fem/Infantil DTF 100% Algodão Fio 30.1",
-  "Camiseta Polo Piquet – Masc/Fem Impressão Ultra-HD DTF Piquet 50% Algodão/50% Poliéster",
-  "Regata Personalizada",
-  "--- CALÇÃO / BERMUDA ---",
-  "Bermuda Personalizada",
-  "Calção Futebol Premium",
-  "--- CORTA VENTO ---",
-  "Corta Vento Aeroblade PP – Hidro Power 95% Poliéster c/ Forro Tactel",
-  "Corta Vento Aeroblade P – Hidro Power 95% Poliéster c/ Forro Tactel",
-  "Corta Vento Aeroblade M – Hidro Power 95% Poliéster c/ Forro Tactel",
-  "Corta Vento Aeroblade G – Hidro Power 95% Poliéster c/ Forro Tactel",
-  "Corta Vento Aeroblade GG – Hidro Power 95% Poliéster c/ Forro Tactel",
-  "Corta Vento Aeroblade XG – Hidro Power 95% Poliéster c/ Forro Tactel",
-  "--- DTF / TRANSFER ---",
-  "Cartela DTF UV",
-  "DTF Têxtil – 4 Cores + Branco Filme Transfer Poliamida HD Corte Reto",
-  "DTF-UV Tamanho A3 – 29x42cm 5 Cores + Verniz Adesivo Corte Reto",
-  "DTF-UV Tamanho A2 – 42x59cm 5 Cores + Verniz Adesivo Corte Reto",
-  "DTF-UV Tamanho A1 – 58x84cm 5 Cores + Verniz Adesivo Corte Reto",
-  "Transfer Têxtil",
-  "--- ECO ---",
-  "Eco Bag Personalizada",
-  "Eco Banner",
-  "Eco Faixa",
-  "--- FARDAMENTO ---",
-  "Fardamento Futebol Personalizado",
-  "Kit Festa Personalizado",
-  "--- HASTES ---",
-  "Hastes para Wind Banner",
-  "Hastes Fibra Wind Banner",
-  "Tripé para Banner",
-  "--- LONA ---",
-  "Lona 340gr Impressão Digital (por m²)",
-  "Placa PS | Poliestireno",
-  "--- PERFURADO ---",
-  "Perfurado Digital Personalizado",
-  "Perfurado UV Personalizado",
-  "--- ROLL-UP ---",
-  "Roll-Up Completo Tecido – 2,0m x 0,80m Alumínio Tecido DTEX",
-  "Roll-Up Completo Lona – 2,0m x 0,80m Alumínio Lona 400gr",
-  "Roll-Up Expositor – 2,0m x 0,80m Retrátil (sem tecido/lona)",
-  "--- SACOLAS / BAGS ---",
-  "Eco Bag Personalizada",
-  "Gym Bag Personalizada",
-  "Sacolinhas Surpresa Personalizadas",
-  "--- TECIDOS ---",
-  "Tecido para Festas Personalizado",
-  "Tecido Sublimado (por metro linear)",
-  "--- WIND BANNER ---",
-  "Mini Wind Banner",
-  "Wind Banner Completo P – 1,85m x 0,65m Dupla-Face Tecnosport",
-  "Wind Banner Completo M – 2,45m x 0,65m Dupla-Face Tecnosport",
-  "Wind Banner Completo G – 2,90m x 0,65m Dupla-Face Tecnosport",
-  "Wind Banner Completo GG – 3,45m x 0,65m Dupla-Face Tecnosport",
-  "Wind Banner Fibra M – 2,50m x 0,65m Dupla-Face Tecnosport c/ Fibra",
-  "Wind Banner Fibra G – 3,0m x 0,65m Dupla-Face Tecnosport c/ Fibra",
-  "Wind Banner Full Parede P – 1,85m x 0,65m Dupla-Face Tecnosport c/ Suporte Aço",
-  "Wind Banner Full Parede M – 2,70m x 0,65m Dupla-Face Tecnosport c/ Suporte Aço",
-  "Wind Banner Full Parede GG – 3,20m x 0,65m Dupla-Face Tecnosport c/ Suporte Aço",
-  "Wind Banner Parede P – 1,85m x 0,65m Dupla-Face Tecnosport c/ Suporte Aço",
-  "Wind Banner Parede M – 2,45m x 0,65m Dupla-Face Tecnosport c/ Suporte Aço",
-  "Wind Banner Parede G Full – 2,70m x 0,65m Dupla-Face Tecnosport c/ Suporte Aço",
-  "Wind Banner Parede GG – 3,45m x 0,65m Dupla-Face Tecnosport c/ Suporte Aço",
-  "Wind Banner Promocional",
-  "Wind Banners Tecido",
-  "Wind Banner Tecido p/ Fibra",
-  "--- ARTE E CRIAÇÃO ---",
-  "Criação de Arte / Design Gráfico",
-  "Revisão / Ajuste de Arte"
-];
-
-// ══════════════════════════════════════
-// SUPABASE CONFIG — substitua suas chaves
-// ══════════════════════════════════════
-const SUPABASE_URL = 'https://ubsskigctaybgbljozky.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_yQ4yL_WfUh_ex6QoSjvDlg_mGZzp4Qk';
-
-async function sbFetch(path, opts = {}) {
-  const res = await fetch(SUPABASE_URL + '/rest/v1/' + path, {
-    headers: {
-      'apikey': SUPABASE_KEY,
-      'Authorization': 'Bearer ' + SUPABASE_KEY,
-      'Content-Type': 'application/json',
-      'Prefer': opts.prefer || 'return=representation',
-      ...opts.headers
-    },
-    ...opts
-  });
-  if (!res.ok) { const e = await res.text(); throw new Error(e); }
-  const txt = await res.text();
-  return txt ? JSON.parse(txt) : [];
-}
-
-// Map JS object → DB columns
-function toDb(v) {
-  return {
-    numero: v.numero || null,
-    numero_interno: v.numeroInterno || null,
-    data: v.data || null,
-    cliente: v.cliente || null,
-    produto: v.produto || null,
-    tamanho: v.tamanho || null,
-    quantidade: v.quantidade || 1,
-    preco_custo: v.precoCusto || 0,
-    preco_venda: v.precoVenda || 0,
-    imposto: v.imposto || 4,
-    taxa: v.taxa || 0,
-    lucro: v.lucro || 0,
-    pagamento: v.pagamento || null,
-    designer: v.designer || null,
-    status: v.status || 'Pendente',
-    envio: v.envio || null,
-    entregue: v.entregue || 'Não',
-    obs: v.obs || null,
-    dias_prod: v.diasProd || null,
-    dias_entrega: v.diasEntrega || null,
-    prazo_prod: v.prazoProd || null,
-    prazo_entrega: v.prazoEntrega || null
-  };
-}
-
-// Map DB row → JS object
-function fromDb(r) {
-  return {
-    _id: r.id,
-    numero: r.numero,
-    numeroInterno: r.numero_interno,
-    data: r.data,
-    cliente: r.cliente,
-    produto: r.produto,
-    tamanho: r.tamanho,
-    quantidade: r.quantidade,
-    precoCusto: r.preco_custo,
-    precoVenda: r.preco_venda,
-    imposto: r.imposto,
-    taxa: r.taxa,
-    lucro: r.lucro,
-    pagamento: r.pagamento,
-    designer: r.designer,
-    status: r.status,
-    envio: r.envio,
-    entregue: r.entregue,
-    obs: r.obs,
-    diasProd: r.dias_prod,
-    diasEntrega: r.dias_entrega,
-    prazoProd: r.prazo_prod,
-    prazoEntrega: r.prazo_entrega
-  };
-}
-
-let vendas = [];
-let isLoading = false;
-
-async function carregarVendas() {
-  try {
-    showLoading(true);
-    const rows = await sbFetch('vendas?order=created_at.desc&select=*');
-    vendas = rows.map(fromDb);
-    renderTable();
-    updateKPIs();
-    verificarAoAbrir();
-    const horaNotif = parseInt(localStorage.getItem('kl_notif_hora'));
-    if (horaNotif && Notification.permission === 'granted') agendarNotificacao(horaNotif);
-  } catch(e) {
-    showError('Erro ao carregar vendas: ' + e.message);
-  } finally {
-    showLoading(false);
-  }
-}
-
-function showLoading(on) {
-  isLoading = on;
-  const el = document.getElementById('loading-indicator');
-  if (el) el.style.display = on ? 'flex' : 'none';
-}
-
-function showError(msg) {
-  const el = document.getElementById('error-msg');
-  if (el) { el.textContent = msg; el.style.display = 'block'; setTimeout(() => el.style.display='none', 5000); }
-}
-let editIndex = null;
-let sortCol = 'data';
-let sortDir = -1;
-
-
-function populateProdutos() {
-  const sel = document.getElementById('f-produto-select');
-  if (!sel) return;
-  sel.innerHTML = '<option value="">Selecione o produto...</option>';
-  produtos.forEach(p => {
-    const opt = document.createElement('option');
-    if (p.startsWith('---')) {
-      opt.disabled = true;
-      opt.style.color = '#999';
-      opt.style.fontStyle = 'italic';
-      opt.textContent = p;
-    } else {
-      opt.value = p;
-      opt.textContent = p;
-    }
-    sel.appendChild(opt);
-  });
-  // Add manual option at top
-  const manualOpt = document.createElement('option');
-  manualOpt.value = '✏️ DIGITAR MANUALMENTE';
-  manualOpt.textContent = '✏️ DIGITAR MANUALMENTE';
-  sel.insertBefore(manualOpt, sel.children[1]);
-}
-
-function checkManualProduto() {
-  const sel = document.getElementById('f-produto-select');
-  const cell = document.getElementById('f-produto-cell');
-  if (sel && sel.value === '✏️ DIGITAR MANUALMENTE') {
-    cell.innerHTML = '<input type="text" id="f-produto-select" placeholder="Digite o produto..." style="width:100%;background:var(--bg2);border:1px solid var(--blue);border-radius:8px;padding:9px 12px;font-size:13px;font-family:var(--font-body);color:var(--text);outline:none;">';
-  }
-}
-
-// ── LUCRO ──
-function calcLucro() {
-  const qty   = parseFloat(document.getElementById('f-quantidade').value) || 1;
-  const custo = parseFloat(document.getElementById('f-custo').value) || 0;
-  const venda = parseFloat(document.getElementById('f-venda').value) || 0;
-  const imp   = parseFloat(document.getElementById('f-imposto').value) || 0;
-  const taxa  = parseFloat(document.getElementById('f-taxa').value) || 0;
-
-  const totalVenda  = venda * qty;
-  const totalCusto  = custo * qty;
-  const valorImp    = totalVenda * (imp / 100);
-  const valorTaxa   = totalVenda * (taxa / 100);
-  const lucro       = totalVenda - totalCusto - valorImp - valorTaxa;
-
-  const el = document.getElementById('f-lucro-display');
-  el.textContent = 'R$ ' + lucro.toFixed(2).replace('.', ',');
-  el.style.color = lucro >= 0 ? 'var(--green)' : 'var(--red)';
-  return lucro;
-}
-
-// ── MODAL ──
-function abrirModal(idx = null) {
-  editIndex = idx;
-  document.getElementById('modal-title').textContent = idx !== null ? 'Editar Pedido' : 'Novo Pedido';
-  if (idx !== null) {
-    const v = vendas[idx];
-    document.getElementById('f-numero').value          = v.numero || '';
-    document.getElementById('f-numero-interno').value  = v.numeroInterno || '';
-    document.getElementById('f-data').value     = v.data || '';
-    document.getElementById('f-cliente').value  = v.cliente || '';
-    populateProdutos();
-    const sel = document.getElementById('f-produto-select');
-    if (sel && sel.tagName === 'SELECT') {
-      // try to find matching option
-      const opts = Array.from(sel.options).map(o => o.value);
-      if (opts.includes(v.produto)) { sel.value = v.produto; }
-      else if (v.produto) {
-        // switch to manual
-        document.getElementById('f-produto-cell').innerHTML = '<input type="text" id="f-produto-select" style="width:100%;background:var(--bg2);border:1px solid var(--blue);border-radius:8px;padding:9px 12px;font-size:13px;font-family:var(--font-body);color:var(--text);outline:none;" value="' + v.produto.replace(/"/g,"'") + '">';
-      }
-    } else if (sel) { sel.value = v.produto || ''; }
-    document.getElementById('f-tamanho').value  = v.tamanho || '';
-    document.getElementById('f-quantidade').value = v.quantidade || 1;
-    document.getElementById('f-custo').value    = v.precoCusto || '';
-    document.getElementById('f-venda').value    = v.precoVenda || '';
-    document.getElementById('f-imposto').value  = v.imposto ?? 4;
-    document.getElementById('f-taxa').value     = v.taxa || 0;
-    document.getElementById('f-pagamento').value = v.pagamento || 'PIX';
-    document.getElementById('f-designer').value = v.designer || '';
-    document.getElementById('f-status').value   = v.status || 'Pendente';
-    document.getElementById('f-envio').value    = v.envio || 'Retirada';
-    document.getElementById('f-dias-prod').value     = v.diasProd || '';
-    document.getElementById('f-dias-entrega').value  = v.diasEntrega || '';
-    document.getElementById('f-prazo-prod').value    = v.prazoProd || '';
-    document.getElementById('f-prazo-entrega').value = v.prazoEntrega || '';
-    document.getElementById('f-entregue').value = v.entregue || 'Não';
-    document.getElementById('f-obs').value      = v.obs || '';
-  } else {
-    document.getElementById('f-numero').value          = gerarNumero();
-    document.getElementById('f-numero-interno').value  = '';
-    document.getElementById('f-data').value     = new Date().toISOString().split('T')[0];
-    document.getElementById('f-cliente').value  = '';
-    populateProdutos();
-    const selNew = document.getElementById('f-produto-select');
-    if (selNew) selNew.value = '';
-    document.getElementById('f-tamanho').value  = '';
-    document.getElementById('f-quantidade').value = 1;
-    document.getElementById('f-custo').value    = '';
-    document.getElementById('f-venda').value    = '';
-    document.getElementById('f-imposto').value  = 4;
-    document.getElementById('f-taxa').value     = 0;
-    document.getElementById('f-pagamento').value = 'PIX';
-    document.getElementById('f-designer').value = '';
-    document.getElementById('f-status').value   = 'Pendente';
-    document.getElementById('f-envio').value    = 'Retirada';
-    document.getElementById('f-dias-prod').value     = '';
-    document.getElementById('f-dias-entrega').value  = '';
-    document.getElementById('f-prazo-prod').value    = '';
-    document.getElementById('f-prazo-entrega').value = '';
-    document.getElementById('f-entregue').value = 'Não';
-    document.getElementById('f-obs').value      = '';
-  }
-  calcLucro();
-  document.getElementById('modal-overlay').classList.add('open');
-}
-
-function fecharModal() {
-  document.getElementById('modal-overlay').classList.remove('open');
-  editIndex = null;
-}
-
-function gerarNumero() {
-  const max = vendas.reduce((m, v) => Math.max(m, parseInt(v.numero) || 0), 0);
-  return String(max + 1).padStart(3, '0');
-}
-
-// ── SALVAR ──
-function salvarPedido() {
-  const v = {
-    numero:        document.getElementById('f-numero').value.trim(),
-    numeroInterno: document.getElementById('f-numero-interno').value.trim(),
-    data:       document.getElementById('f-data').value,
-    cliente:    document.getElementById('f-cliente').value.trim(),
-    produto:    (document.getElementById('f-produto-select') || document.getElementById('f-produto')).value.trim(),
-    tamanho:    document.getElementById('f-tamanho').value.trim(),
-    quantidade: parseFloat(document.getElementById('f-quantidade').value) || 1,
-    precoCusto: parseFloat(document.getElementById('f-custo').value) || 0,
-    precoVenda: parseFloat(document.getElementById('f-venda').value) || 0,
-    imposto:    parseFloat(document.getElementById('f-imposto').value) || 4,
-    taxa:       parseFloat(document.getElementById('f-taxa').value) || 0,
-    pagamento:  document.getElementById('f-pagamento').value,
-    designer:   document.getElementById('f-designer').value.trim(),
-    status:     document.getElementById('f-status').value,
-    diasProd:     parseInt(document.getElementById('f-dias-prod').value) || null,
-    diasEntrega:  parseInt(document.getElementById('f-dias-entrega').value) || null,
-    prazoProd:    document.getElementById('f-prazo-prod').value,
-    prazoEntrega: document.getElementById('f-prazo-entrega').value,
-    envio:      document.getElementById('f-envio').value,
-    entregue:   document.getElementById('f-entregue').value,
-    obs:        document.getElementById('f-obs').value.trim(),
-    lucro:      calcLucro()
-  };
-  if (!v.cliente || !v.produto) {
-    alert('Preencha ao menos Cliente e Produto.');
-    return;
-  }
-  if (editIndex !== null) vendas[editIndex] = v;
-  else vendas.unshift(v);
-  salvarStorage();
-  fecharModal();
-  renderTable();
-}
-
-function excluirPedido(idx) {
-  if (!confirm('Excluir este pedido?')) return;
-  vendas.splice(idx, 1);
-  salvarStorage();
-  renderTable();
-}
-
-function salvarStorage() {
-  // localStorage kept as backup cache
-  localStorage.setItem('kl_vendas', JSON.stringify(vendas));
-}
-
-// ── RENDER ──
-function getStatusBadge(s) {
-  const map = {
-    'Pendente':    'badge-pendente',
-    'Em Produção': 'badge-producao',
-    'Pronto':      'badge-pronto',
-    'Entregue':    'badge-entregue',
-    'Cancelado':   'badge-cancelado',
-  };
-  return `<span class="badge ${map[s]||'badge-pendente'}">${s}</span>`;
-}
-
-function fmt(v) {
-  return 'R$ ' + (v||0).toFixed(2).replace('.',',');
-}
-function fmtDate(d) {
-  if (!d) return '—';
-  const [y,m,dia] = d.split('-');
-  return `${dia}/${m}/${y}`;
-}
-
-function renderTable() {
-  const search = document.getElementById('search').value.toLowerCase();
-  const fStatus = document.getElementById('filter-status').value;
-  const fPag = document.getElementById('filter-pagamento').value;
-  const fEnt = document.getElementById('filter-entregue').value;
-
-  updateDynamicFilters();
-  const fDesigner = document.getElementById('filter-designer').value;
-  const fProduto  = document.getElementById('filter-produto').value;
-  const fPeriodo  = document.getElementById('filter-periodo').value;
-  const fDe       = document.getElementById('filter-de')?.value;
-  const fAte      = document.getElementById('filter-ate')?.value;
-
-  let data = vendas.filter((v, i) => {
-    v._idx = i;
-    const txt = `${v.numero} ${v.numeroInterno||''} ${v.cliente} ${v.produto} ${v.designer}`.toLowerCase();
-    if (search && !txt.includes(search)) return false;
-    if (fStatus && v.status !== fStatus) return false;
-    if (fPag && v.pagamento !== fPag) return false;
-    if (fEnt && v.entregue !== fEnt) return false;
-    if (fDesigner && v.designer !== fDesigner) return false;
-    if (fProduto && v.produto !== fProduto) return false;
-    if (fPeriodo === 'hoje') {
-      const hoje = new Date().toISOString().split('T')[0];
-      if (v.data !== hoje) return false;
-    } else if (fPeriodo === 'mes') {
-      const now = new Date();
-      const ym = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-      if (!v.data || !v.data.startsWith(ym)) return false;
-    } else if (fPeriodo === 'custom') {
-      if (fDe && v.data < fDe) return false;
-      if (fAte && v.data > fAte) return false;
-    }
-    return true;
-  });
-
-  // Sort
-  data.sort((a, b) => {
-    let va = a[sortCol] ?? '', vb = b[sortCol] ?? '';
-    if (typeof va === 'string') va = va.toLowerCase();
-    if (typeof vb === 'string') vb = vb.toLowerCase();
-    return va < vb ? sortDir : va > vb ? -sortDir : 0;
-  });
-
-  const tbody = document.getElementById('table-body');
-  const empty = document.getElementById('empty-state');
-
-  if (data.length === 0) {
-    tbody.innerHTML = '';
-    empty.style.display = 'block';
-    return;
-  }
-  empty.style.display = 'none';
-
-  tbody.innerHTML = data.map(v => {
-    const lucroClass = v.lucro >= 0 ? 'lucro-pos' : 'lucro-neg';
-    const obsTitle = v.obs ? `title="${v.obs.replace(/"/g,"'")}"` : '';
-    return `<tr>
-      <td><strong style="color:var(--cyan)">#${v.numero||'—'}</strong></td>
-      <td style="color:var(--gold)">${v.numeroInterno||'—'}</td>
-      <td>${fmtDate(v.data)}</td>
-      <td>${getPrazoCell(v.prazoProd, v.entregue, 'prod')}</td>
-      <td>${getPrazoCell(v.prazoEntrega, v.entregue, 'entrega')}</td>
-      <td><strong>${v.cliente||'—'}</strong></td>
-      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis" title="${v.produto}">${v.produto||'—'}</td>
-      <td>${v.tamanho||'—'}</td>
-      <td style="text-align:center">${v.quantidade}</td>
-      <td>${fmt(v.precoCusto)}</td>
-      <td><strong>${fmt(v.precoVenda)}</strong></td>
-      <td style="text-align:center">${v.imposto}%</td>
-      <td style="text-align:center">${v.taxa}%</td>
-      <td class="${lucroClass}">${fmt(v.lucro)}</td>
-      <td>${v.pagamento||'—'}</td>
-      <td>${v.designer||'—'}</td>
-      <td>
-        <select onchange="alterarStatus(${v._idx}, this.value)" style="background:transparent;border:1px solid var(--border);border-radius:20px;padding:3px 8px;font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;outline:none;color:${getStatusColor(v.status)};">
-          <option value="Pendente"    ${v.status==='Pendente'?'selected':''} style="background:#1e2a45;color:#ffd32a">Pendente</option>
-          <option value="Em Produção" ${v.status==='Em Produção'?'selected':''} style="background:#1e2a45;color:#00b4d8">Em Produção</option>
-          <option value="Pronto"      ${v.status==='Pronto'?'selected':''} style="background:#1e2a45;color:#00c896">Pronto</option>
-          <option value="Entregue"    ${v.status==='Entregue'?'selected':''} style="background:#1e2a45;color:#6eb3f7">Entregue</option>
-          <option value="Cancelado"   ${v.status==='Cancelado'?'selected':''} style="background:#1e2a45;color:#ff4757">Cancelado</option>
-        </select>
-      </td>
-      <td>${v.envio||'—'}</td>
-      <td class="${v.entregue==='Sim'?'entregue-sim':'entregue-nao'}">${v.entregue==='Sim'?'✅ Sim':'⏳ Não'}</td>
-      <td ${obsTitle} style="max-width:120px;overflow:hidden;text-overflow:ellipsis;cursor:${v.obs?'help':'default'}">${v.obs?'📝 '+v.obs.slice(0,20)+(v.obs.length>20?'…':''):'—'}</td>
-      <td>
-        <div class="acoes">
-          <button class="btn btn-edit" onclick="abrirModal(${v._idx})">✏️</button>
-          <button class="btn btn-danger" onclick="excluirPedido(${v._idx})">🗑</button>
-        </div>
-      </td>
-    </tr>`;
-  }).join('');
-
-  document.getElementById('total-registros').textContent = `${data.length} pedido${data.length!==1?'s':''}  (de ${vendas.length})`;
-  updateKPIs(data.map(v => vendas[v._idx]).filter(Boolean));
-}
-
-// ── KPIS ──
-function updateKPIs(filtered) {
-  const base = filtered || vendas;
-  const total = base.length;
-  const fat = base.reduce((s, v) => s + (v.precoVenda * (v.quantidade||1)), 0);
-  const lucro = base.reduce((s, v) => s + (v.lucro||0), 0);
-  const ticket = total ? fat / total : 0;
-  const pendentes = base.filter(v => v.status === 'Pendente' || v.status === 'Em Produção').length;
-  const suffix = filtered ? ' *' : '';
-
-  document.getElementById('kpi-pedidos').textContent = total + suffix;
-  document.getElementById('kpi-faturamento').textContent = 'R$ ' + fat.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + suffix;
-  document.getElementById('kpi-lucro').textContent = 'R$ ' + lucro.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + suffix;
-  document.getElementById('kpi-ticket').textContent = 'R$ ' + ticket.toFixed(0);
-  document.getElementById('kpi-pendentes').textContent = pendentes;
-  document.getElementById('kpi-lucro').style.color = lucro >= 0 ? 'var(--green)' : 'var(--red)';
-
-  // Show filter indicator
-  const ind = document.getElementById('filter-indicator');
-  if (ind) ind.style.display = filtered ? 'inline' : 'none';
-}
-
-// ── SORT ──
-function sortBy(col) {
-  if (sortCol === col) sortDir *= -1;
-  else { sortCol = col; sortDir = 1; }
-  renderTable();
-}
-
-// ── EXPORT CSV ──
-function exportCSV() {
-  const headers = ['Nº Pedido','Nº Interno','Data','Prazo Produção','Prazo Entrega','Cliente','Produto','Tamanho','Qtd','Custo','Venda','Imposto%','Taxa%','Lucro','Pagamento','Designer','Status','Envio','Entregue','Obs'];
-  const rows = vendas.map(v => [
-    v.numero, v.numeroInterno||'', v.data, v.prazoProd||'', v.prazoEntrega||'', v.cliente, v.produto, v.tamanho,
-    v.quantidade, v.precoCusto, v.precoVenda, v.imposto, v.taxa,
-    v.lucro?.toFixed(2), v.pagamento, v.designer, v.status, v.envio, v.entregue,
-    (v.obs||'').replace(/,/g,' ')
-  ]);
-  const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
-  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'vendas_kl_market_' + new Date().toISOString().slice(0,10) + '.csv';
-  a.click();
-}
-
-
-
-// ── FERIADOS NACIONAIS FIXOS (ano atual e próximo) ──
-function getFeriados() {
-  const anos = [new Date().getFullYear(), new Date().getFullYear() + 1];
-  const feriados = new Set();
-  anos.forEach(y => {
-    // Fixos
-    ['01-01','04-21','05-01','09-07','10-12','11-02','11-15','11-20','12-25'].forEach(d => {
-      feriados.add(`${y}-${d}`);
-    });
-    // Carnaval e Páscoa (móveis) — cálculo de Easter (algoritmo de Meeus/Jones/Butcher)
-    const a = y % 19, b = Math.floor(y/100), c = y % 100;
-    const d2 = Math.floor(b/4), e = b % 4, f = Math.floor((b+8)/25);
-    const g = Math.floor((b-f+1)/3), h = (19*a+b-d2-g+15) % 30;
-    const i = Math.floor(c/4), k = c % 4;
-    const l = (32+2*e+2*i-h-k) % 7;
-    const m = Math.floor((a+11*h+22*l)/451);
-    const month = Math.floor((h+l-7*m+114)/31);
-    const day = ((h+l-7*m+114) % 31) + 1;
-    const pascoa = new Date(y, month-1, day);
-    // Sexta Santa (2 dias antes), Carnaval (47 e 48 dias antes), Corpus Christi (60 dias depois)
-    [-48,-47,-2,60].forEach(offset => {
-      const dt = new Date(pascoa); dt.setDate(dt.getDate() + offset);
-      feriados.add(dt.toISOString().split('T')[0]);
-    });
-    feriados.add(pascoa.toISOString().split('T')[0]);
-  });
-  return feriados;
-}
-
-function addDiasUteis(dataInicio, dias) {
-  const feriados = getFeriados();
-  let dt = new Date(dataInicio + 'T00:00:00');
-  let count = 0;
-  while (count < dias) {
-    dt.setDate(dt.getDate() + 1);
-    const dow = dt.getDay();
-    const iso = dt.toISOString().split('T')[0];
-    if (dow !== 0 && dow !== 6 && !feriados.has(iso)) count++;
-  }
-  return dt.toISOString().split('T')[0];
-}
-
-function calcPrazos() {
-  const dataBase = document.getElementById('f-data').value || new Date().toISOString().split('T')[0];
-  const diasProd = parseInt(document.getElementById('f-dias-prod').value);
-  const diasEnt  = parseInt(document.getElementById('f-dias-entrega').value);
-
-  if (diasProd && diasProd > 0) {
-    const dataProd = addDiasUteis(dataBase, diasProd);
-    document.getElementById('f-prazo-prod').value = dataProd;
-    if (diasEnt && diasEnt > 0) {
-      document.getElementById('f-prazo-entrega').value = addDiasUteis(dataProd, diasEnt);
-    }
-  }
-}
-
-function recalcEntrega() {
-  const dataProd = document.getElementById('f-prazo-prod').value;
-  const diasEnt  = parseInt(document.getElementById('f-dias-entrega').value);
-  if (dataProd && diasEnt && diasEnt > 0) {
-    document.getElementById('f-prazo-entrega').value = addDiasUteis(dataProd, diasEnt);
-  }
-}
-
-
-
-function togglePeriodo() {
-  const val = document.getElementById('filter-periodo').value;
-  const box = document.getElementById('custom-periodo');
-  box.style.display = val === 'custom' ? 'flex' : 'none';
-  renderTable();
-}
-
-function updateDynamicFilters() {
-  // Designer filter
-  const designers = [...new Set(vendas.map(v => v.designer).filter(Boolean))].sort();
-  const dSel = document.getElementById('filter-designer');
-  const curD = dSel.value;
-  dSel.innerHTML = '<option value="">Todos designers</option>' +
-    designers.map(d => `<option value="${d}" ${d===curD?'selected':''}>${d}</option>`).join('');
-
-  // Produto filter - unique product names
-  const prods = [...new Set(vendas.map(v => v.produto).filter(Boolean))].sort();
-  const pSel = document.getElementById('filter-produto');
-  const curP = pSel.value;
-  // Truncate long names for display
-  pSel.innerHTML = '<option value="">Todos produtos</option>' +
-    prods.map(p => {
-      const short = p.length > 40 ? p.slice(0,40)+'…' : p;
-      return `<option value="${p}" ${p===curP?'selected':''}>${short}</option>`;
-    }).join('');
-}
-
-// ── STATUS COLOR ──
-function getStatusColor(s) {
-  return { 'Pendente':'#ffd32a', 'Em Produção':'#00b4d8', 'Pronto':'#00c896', 'Entregue':'#6eb3f7', 'Cancelado':'#ff4757' }[s] || '#7986ab';
-}
-
-// ── ALTERAR STATUS INLINE ──
-function alterarStatus(idx, novoStatus) {
-  if (idx === undefined || idx === null || !vendas[idx]) return;
-  vendas[idx].status = novoStatus;
-  // Se marcou Entregue, atualiza entregue também
-  if (novoStatus === 'Entregue') vendas[idx].entregue = 'Sim';
-  // Se voltou de Entregue, reverte
-  if (novoStatus !== 'Entregue' && vendas[idx].entregue === 'Sim') vendas[idx].entregue = 'Não';
-  salvarStorage();
-  renderTable();
-}
-
-// ── PRAZO CELL ──
-function getPrazoCell(prazo, entregue, tipo) {
-  if (tipo === 'entrega' && entregue === 'Sim') return '<span class="prazo-ok">✅ Entregue</span>';
-  if (!prazo) return '<span class="prazo-none">—</span>';
-  const hoje = new Date(); hoje.setHours(0,0,0,0);
-  const p = new Date(prazo + 'T00:00:00');
-  const diff = Math.round((p - hoje) / 86400000);
-  const icon = tipo === 'prod' ? '🔧' : '🚚';
-  if (diff < 0)  return `<span class="prazo-vencido">🔴 ${fmtDate(prazo)}<small> (${Math.abs(diff)}d atraso)</small></span>`;
-  if (diff === 0) return `<span class="prazo-hoje">${icon} Hoje!</span>`;
-  if (diff === 1) return `<span class="prazo-amanha">${icon} Amanhã</span>`;
-  if (diff <= 3)  return `<span class="prazo-amanha">${icon} ${fmtDate(prazo)}</span>`;
-  return `<span class="prazo-ok">${icon} ${fmtDate(prazo)}</span>`;
-}
-
-// ── VERIFICAR PRAZOS ──
-function verificarPrazos(silencioso = false) {
-  const hoje = new Date(); hoje.setHours(0,0,0,0);
-  const alertas = [];
-
-  vendas.forEach(v => {
-    if (v.status === 'Cancelado' || v.status === 'Entregue') return;
-
-    // Prazo de Produção — alerta 2 dias antes
-    if (v.prazoProd && v.status !== 'Pronto') {
-      const p = new Date(v.prazoProd + 'T00:00:00');
-      const diff = Math.round((p - hoje) / 86400000);
-      if (diff <= 2) alertas.push({ ...v, diff, tipo: 'prod' });
-    }
-
-    // Prazo de Entrega — alerta 1 dia antes
-    if (v.prazoEntrega && v.entregue !== 'Sim') {
-      const p = new Date(v.prazoEntrega + 'T00:00:00');
-      const diff = Math.round((p - hoje) / 86400000);
-      if (diff <= 1) alertas.push({ ...v, diff, tipo: 'entrega' });
-    }
-  });
-
-  alertas.sort((a, b) => a.diff - b.diff);
-
-  if (alertas.length === 0) {
-    if (!silencioso) {
-      document.getElementById('alert-prazo-list').innerHTML =
-        '<div style="text-align:center;padding:20px;color:var(--green)">✅ Nenhum prazo urgente nos próximos dias!</div>';
-      document.getElementById('alert-prazo-overlay').classList.remove('hidden');
-    }
-    return;
-  }
-
-  // Group by pedido
-  const grupos = {};
-  alertas.forEach(a => {
-    const key = a.numero || a.cliente;
-    if (!grupos[key]) grupos[key] = { v: a, tipos: [] };
-    grupos[key].tipos.push(a);
-  });
-
-  const items = Object.values(grupos).map(({ v, tipos }) => {
-    const tags = tipos.map(t => {
-      const icon = t.tipo === 'prod' ? '🔧 Produção' : '🚚 Entrega';
-      const cls = t.diff < 0 ? 'tag-vencido' : t.diff === 0 ? 'tag-hoje' : 'tag-amanha';
-      const label = t.diff < 0 ? `${icon} — Vencido há ${Math.abs(t.diff)}d`
-                  : t.diff === 0 ? `${icon} — HOJE!`
-                  : t.diff === 1 ? `${icon} — Amanhã`
-                  : `${icon} — ${t.diff}d`;
-      return `<span class="alert-item-tag ${cls}" style="display:block;margin-bottom:3px">${label}</span>`;
-    }).join('');
-    const cls = tipos.some(t => t.diff <= 0) ? 'vencido' : tipos.some(t => t.diff === 1) ? 'hoje' : 'amanha';
-    return `<div class="alert-item ${cls}">
-      <div class="alert-item-info">
-        <strong>#${v.numeroInterno||v.numero||'?'} — ${v.cliente}</strong>
-        <p>${v.produto}${v.tamanho?' | '+v.tamanho:''} · ${v.status}</p>
-      </div>
-      <div style="text-align:right">${tags}</div>
-    </div>`;
-  }).join('');
-
-  document.getElementById('alert-prazo-list').innerHTML = items;
-  document.getElementById('alert-prazo-overlay').classList.remove('hidden');
-}
-
-function fecharAlertaPrazo() {
-  document.getElementById('alert-prazo-overlay').classList.add('hidden');
-  localStorage.setItem('kl_alerta_visto', new Date().toDateString());
-}
-
-// ── NOTIFICAÇÕES NATIVAS ──
-function ativarNotificacoes() {
-  if (!('Notification' in window)) {
-    document.getElementById('notif-status').textContent = '⚠️ Seu navegador não suporta notificações.';
-    return;
-  }
-  Notification.requestPermission().then(perm => {
-    if (perm === 'granted') {
-      const hora = parseInt(document.getElementById('notif-hora').value);
-      localStorage.setItem('kl_notif_hora', hora);
-      document.getElementById('notif-status').textContent = `✅ Notificações ativas! Você será avisado diariamente às ${hora}:00.`;
-      agendarNotificacao(hora);
-    } else {
-      document.getElementById('notif-status').textContent = '❌ Permissão negada. Ative nas configurações do navegador.';
-    }
-  });
-}
-
-function agendarNotificacao(hora) {
-  const agora = new Date();
-  const alvo = new Date();
-  alvo.setHours(hora, 0, 0, 0);
-  if (alvo <= agora) alvo.setDate(alvo.getDate() + 1);
-  const ms = alvo - agora;
-  setTimeout(() => {
-    dispararNotificacao();
-    setInterval(dispararNotificacao, 24 * 60 * 60 * 1000);
-  }, ms);
-}
-
-function dispararNotificacao() {
-  const hoje = new Date(); hoje.setHours(0,0,0,0);
-  const alertas = vendas.filter(v => {
-    if (v.status === 'Cancelado' || v.status === 'Entregue') return false;
-    let urgente = false;
-    if (v.prazoProd && v.status !== 'Pronto') {
-      const diff = Math.round((new Date(v.prazoProd + 'T00:00:00') - hoje) / 86400000);
-      if (diff <= 2) urgente = true;
-    }
-    if (v.prazoEntrega && v.entregue !== 'Sim') {
-      const diff = Math.round((new Date(v.prazoEntrega + 'T00:00:00') - hoje) / 86400000);
-      if (diff <= 1) urgente = true;
-    }
-    return urgente;
-  });
-  if (alertas.length > 0 && Notification.permission === 'granted') {
-    new Notification('⏰ KL Market — Prazos Urgentes', {
-      body: `${alertas.length} pedido(s) vencendo hoje ou amanhã! Abra o sistema para ver.`,
-      icon: '📦'
-    });
-  }
-}
-
-// ── VERIFICAR AO ABRIR (pop-up automático) ──
-function verificarAoAbrir() {
-  const hoje = new Date().toDateString();
-  const visto = localStorage.getItem('kl_alerta_visto');
-  if (visto === hoje) return; // já viu hoje
-  
-  const hojeD = new Date(); hojeD.setHours(0,0,0,0);
-  const temAlerta = vendas.some(v => {
-    if (v.status === 'Cancelado' || v.status === 'Entregue') return false;
-    if (v.prazoProd && v.status !== 'Pronto') {
-      const diff = Math.round((new Date(v.prazoProd + 'T00:00:00') - hojeD) / 86400000);
-      if (diff <= 2) return true;
-    }
-    if (v.prazoEntrega && v.entregue !== 'Sim') {
-      const diff = Math.round((new Date(v.prazoEntrega + 'T00:00:00') - hojeD) / 86400000);
-      if (diff <= 1) return true;
-    }
-    return false;
-  });
-  if (temAlerta) verificarPrazos(false);
-}
-
-// ── FECHAR MODAL CLICANDO FORA ──
-document.getElementById('modal-overlay').addEventListener('click', function(e) {
-  if (e.target === this) fecharModal();
-});
-
-// ── INIT ──
-populateProdutos();
-carregarVendas();
-</script>
 
 <!-- ALERT PRAZO -->
 <div id="alert-prazo-overlay" class="hidden">
@@ -1632,14 +414,8 @@ carregarVendas();
     <div class="alert-prazo-body">
       <div id="alert-prazo-list"></div>
       <div class="notif-config">
-        <div>
-          <label><strong style="color:var(--text)">🔔 Notificações do navegador</strong><br>Avisar automaticamente todo dia às:</label>
-        </div>
-        <select id="notif-hora">
-          <option value="8">8:00</option>
-          <option value="9" selected>9:00</option>
-          <option value="10">10:00</option>
-        </select>
+        <div><label><strong style="color:var(--text)">🔔 Notificações diárias às:</strong></label></div>
+        <select id="notif-hora"><option value="8">8:00</option><option value="9" selected>9:00</option><option value="10">10:00</option></select>
         <button class="btn-notif" onclick="ativarNotificacoes()">Ativar</button>
       </div>
       <div id="notif-status" style="font-size:11px;color:var(--muted);margin-top:8px;text-align:center"></div>
@@ -1647,14 +423,583 @@ carregarVendas();
   </div>
 </div>
 
-
-<!-- LOADING -->
 <div id="loading-indicator" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;flex-direction:column;gap:12px">
   <div style="width:48px;height:48px;border:4px solid rgba(255,255,255,0.1);border-top-color:var(--cyan);border-radius:50%;animation:spin 0.8s linear infinite"></div>
   <span style="color:#fff;font-family:var(--font-head);font-size:14px">Carregando...</span>
 </div>
 <div id="error-msg" style="display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#ff4757;color:#fff;padding:12px 24px;border-radius:8px;font-size:13px;z-index:600;font-family:var(--font-body)"></div>
-<style>@keyframes spin { to { transform: rotate(360deg); } }</style>
 
+<script>
+// ══ SUPABASE ══
+const SUPABASE_URL = 'https://ubsskigctaybgbljozky.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_yQ4yL_WfUh_ex6QoSjvDlg_mGZzp4Qk';
+
+async function sbFetch(path, opts={}) {
+  const res = await fetch(SUPABASE_URL+'/rest/v1/'+path, {
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':opts.prefer||'return=representation',...opts.headers},
+    ...opts
+  });
+  if(!res.ok){const e=await res.text();throw new Error(e);}
+  const txt=await res.text();return txt?JSON.parse(txt):[];
+}
+
+function toDb(v){return{
+  numero:v.numero||null,numero_interno:v.numeroInterno||null,data:v.data||null,
+  cliente:v.cliente||null,produto:v.produto||null,tamanho:v.tamanho||null,
+  quantidade:v.quantidade||1,preco_custo:v.precoCusto||0,preco_venda:v.precoVenda||0,
+  imposto:v.imposto||4,taxa:v.taxa||0,lucro:v.lucro||0,
+  margem_bruta:v.margemBruta||0,margem_liquida:v.margemLiquida||0,
+  despesa_designer:v.despesaDesigner||0,frete_real:v.freteReal||0,frete_cobrado:v.freteCobrado||0,
+  pagamento:v.pagamento||null,designer:v.designer||null,status:v.status||'Pendente',
+  envio:v.envio||null,entregue:v.entregue||'Não',obs:v.obs||null,
+  dias_prod:v.diasProd||null,dias_entrega:v.diasEntrega||null,
+  prazo_prod:v.prazoProd||null,prazo_entrega:v.prazoEntrega||null
+};}
+
+function fromDb(r){return{
+  _id:r.id,numero:r.numero,numeroInterno:r.numero_interno,data:r.data,
+  cliente:r.cliente,produto:r.produto,tamanho:r.tamanho,quantidade:r.quantidade,
+  precoCusto:r.preco_custo,precoVenda:r.preco_venda,imposto:r.imposto,taxa:r.taxa,
+  lucro:r.lucro,margemBruta:r.margem_bruta||0,margemLiquida:r.margem_liquida||0,
+  despesaDesigner:r.despesa_designer||0,freteReal:r.frete_real||0,freteCobrado:r.frete_cobrado||0,
+  pagamento:r.pagamento,designer:r.designer,status:r.status,envio:r.envio,
+  entregue:r.entregue,obs:r.obs,diasProd:r.dias_prod,diasEntrega:r.dias_entrega,
+  prazoProd:r.prazo_prod,prazoEntrega:r.prazo_entrega
+};}
+
+let vendas=[],editIndex=null,sortCol='data',sortDir=-1;
+
+async function carregarVendas(){
+  try{
+    showLoading(true);
+    const rows=await sbFetch('vendas?order=created_at.desc&select=*');
+    vendas=rows.map(fromDb);
+    renderTable();updateKPIs();verificarAoAbrir();
+    const h=parseInt(localStorage.getItem('kl_notif_hora'));
+    if(h&&Notification.permission==='granted')agendarNotificacao(h);
+  }catch(e){showError('Erro ao carregar: '+e.message);}
+  finally{showLoading(false);}
+}
+
+function showLoading(on){const el=document.getElementById('loading-indicator');if(el)el.style.display=on?'flex':'none';}
+function showError(msg){const el=document.getElementById('error-msg');if(el){el.textContent=msg;el.style.display='block';setTimeout(()=>el.style.display='none',6000);}}
+
+// ══ TABS ══
+function switchTab(t){
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',['vendas','dashboard'][i]===t));
+  document.getElementById('tab-vendas').classList.toggle('active',t==='vendas');
+  document.getElementById('tab-dashboard').classList.toggle('active',t==='dashboard');
+  if(t==='dashboard')renderDashboard();
+}
+
+// ══ PRODUTOS ══
+const produtos=["✏️ DIGITAR MANUALMENTE","--- ABADÁS ---","Abadá Personalizado","--- ADESIVOS ---","Adesivo Digital – Formato Personalizado Impressão Digital 4x0 Ultra-HD","Adesivo Digital Recorte Personalizado – Impressão Digital 4x0 Ultra-HD Espessura 0,80","Adesivo UV","Adesivo UV Recorte Personalizado – Formato Personalizado Impressão UV 4x0 Ultra-HD 0,80 Micras","Rótulo BOPP – Largura até 45cm 4 Cores BOPP 120g Corte Retangular / Cartela","--- BACKDROP ---","Backdrop Dupla-Face Completo 2000x1000mm","Backdrop Dupla-Face Completo 2000x1400mm","Backdrop Dupla-Face Completo 2000x2000mm","Backdrop Dupla-Face Completo 3000x2000mm","Backdrop Dupla-Face Completo 4000x2000mm","Backdrop Dupla-Face Estrutura 2000x1000mm","Backdrop Dupla-Face Estrutura 2000x2000mm","Backdrop Dupla-Face Estrutura 3000x2000mm","Backdrop Dupla-Face Estrutura 4000x2000mm","Backdrop Tecido Dupla-Face 2000x1000mm","Backdrop Tecido Dupla-Face 2000x2000mm","Backdrop Tecido Dupla-Face 3000x2000mm","Backdrop Tecido Dupla-Face 4000x2000mm","Backdrop Tecido Face Única Tamanho Personalizado","Backdrop Tecido Face Única 2000x2000mm","Backdrop Tecido Face Única 3000x2900mm","Backdrop Tecido Face Única 4000x2000mm","--- BANDEIRAS ---","Bandeira do Brasil – 1,40M x 1,0M","Bandeira Dupla-Face Personalizada","Bandeira Face Única Personalizada HD","--- BANNER / FAIXA ---","Banner/Faixa Personalizado – Lona 340gr (por m²)","Banner/Faixa 70cm","Banner/Faixa 1,0m","Banner/Faixa 1,40m","Eco Banner","Eco Faixa","--- BASE WIND BANNER ---","Base Wind Banner P/M","Base Wind Banner G/GG","Base para Wind Banner Fibra","Base Guarda Sol e Ombrelone","--- BRINDES ---","Balde de Gelo Cristal","Caneca Cerâmica","Copo Quencher","Copo Térmico","Copo Térmico com Caixa de Som","Garrafa Inox 500ml","Garrafa Térmica com Temperatura","Garrafinha Infantil","--- CAMA | MESA | BANHO ---","Cama | Mesa | Banho Personalizado","Fronha Personalizada","Refil Almofada","Refil Travesseiro","Toalha de Banho Personalizada","Toalha de Rosto Personalizada","Toalha de Mesa Personalizada","--- CAPA ---","Capa Almofada Personalizada","Capa de Antena Personalizada","Capa de Gradil 2000x950mm","Capa de Gradil 2000x1250mm","Capa de Gradil 3000x950mm","Capa de Gradil 3000x1250mm","Capa para Malas P","Capa para Malas M","Capa para Malas G","Capa Porta Decorativa","--- CAMISETAS FEMININAS ---","Camiseta Dry Fit Feminina","Camiseta Helanca Feminina","Camiseta Polo Feminina","Camiseta Térmica Feminina","Camiseta UV50+ Feminina","--- CAMISETAS INFANTIS ---","Camiseta Dry Fit Infantil Feminina","Camiseta Dry Fit Infantil Masculina","Camiseta Helanca Plus Feminina Infantil","Camiseta Helanca Infantil Masculina","Camiseta Térmica Infantil Feminina","Camiseta Térmica Infantil Masculina","Camiseta UV50+ Feminina Infantil","Camiseta UV50+ Infantil Masculina","--- CAMISETAS MASCULINAS ---","Camiseta Dry Fit Masculina","Camiseta Helanca Masculina","Camiseta Polo Masculina","Camiseta Térmica Masculina","Camiseta UV50+ Masculina","Camiseta UV50+ Manga Longa Masculina","Camiseta Térmica Manga Longa Masculina","Camiseta Helanca Manga Longa Masculina","Camiseta Terceirão","--- CAMISETAS OUTRAS ---","Camiseta Algodão","Camiseta Polo Piquet","Regata Personalizada","--- CALÇÃO / BERMUDA ---","Bermuda Personalizada","Calção Futebol Premium","--- CORTA VENTO ---","Corta Vento Aeroblade PP","Corta Vento Aeroblade P","Corta Vento Aeroblade M","Corta Vento Aeroblade G","Corta Vento Aeroblade GG","Corta Vento Aeroblade XG","--- DTF / TRANSFER ---","Cartela DTF UV","DTF Têxtil","DTF-UV Tamanho A3","DTF-UV Tamanho A2","DTF-UV Tamanho A1","Transfer Têxtil","--- ECO ---","Eco Bag Personalizada","--- FARDAMENTO ---","Fardamento Futebol Personalizado","Kit Festa Personalizado","--- HASTES ---","Hastes para Wind Banner","Hastes Fibra Wind Banner","Tripé para Banner","--- LONA ---","Lona 340gr Impressão Digital (por m²)","Placa PS | Poliestireno","--- PERFURADO ---","Perfurado Digital Personalizado","Perfurado UV Personalizado","--- ROLL-UP ---","Roll-Up Completo Tecido – 2,0m x 0,80m","Roll-Up Completo Lona – 2,0m x 0,80m","Roll-Up Expositor","--- SACOLAS / BAGS ---","Gym Bag Personalizada","Sacolinhas Surpresa","--- TECIDOS ---","Tecido para Festas Personalizado","Tecido Sublimado (por metro linear)","--- WIND BANNER ---","Mini Wind Banner","Wind Banner Completo P – 1,85m x 0,65m","Wind Banner Completo M – 2,45m x 0,65m","Wind Banner Completo G – 2,90m x 0,65m","Wind Banner Completo GG – 3,45m x 0,65m","Wind Banner Fibra M – 2,50m x 0,65m","Wind Banner Fibra G – 3,0m x 0,65m","Wind Banner Full Parede P","Wind Banner Full Parede M","Wind Banner Full Parede GG","Wind Banner Parede P","Wind Banner Parede M","Wind Banner Parede G Full","Wind Banner Parede GG","Wind Banner Promocional","Wind Banners Tecido","Wind Banner Tecido p/ Fibra","--- ARTE E CRIAÇÃO ---","Criação de Arte / Design Gráfico","Revisão / Ajuste de Arte"];
+
+function populateProdutos(){
+  const sel=document.getElementById('f-produto-select');if(!sel)return;
+  sel.innerHTML='<option value="">Selecione o produto...</option>';
+  produtos.forEach(p=>{
+    const o=document.createElement('option');
+    if(p.startsWith('---')){o.disabled=true;o.style.color='#999';o.style.fontStyle='italic';}
+    else{o.value=p;}o.textContent=p;sel.appendChild(o);
+  });
+  const m=document.createElement('option');m.value='✏️ DIGITAR MANUALMENTE';m.textContent='✏️ DIGITAR MANUALMENTE';
+  sel.insertBefore(m,sel.children[1]);
+}
+
+function checkManualProduto(){
+  const sel=document.getElementById('f-produto-select');
+  const cell=document.getElementById('f-produto-cell');
+  if(sel&&sel.value==='✏️ DIGITAR MANUALMENTE'){
+    cell.innerHTML='<input type="text" id="f-produto-select" placeholder="Digite o produto..." style="width:100%;background:var(--bg2);border:1px solid var(--blue);border-radius:8px;padding:8px 12px;font-size:13px;font-family:var(--font-body);color:var(--text);outline:none;">';
+  }
+}
+
+// ══ CÁLCULO DE LUCRO ══
+function calcLucro(){
+  const qty=parseFloat(document.getElementById('f-quantidade').value)||1;
+  const custo=parseFloat(document.getElementById('f-custo').value)||0;
+  const venda=parseFloat(document.getElementById('f-venda').value)||0;
+  const imp=parseFloat(document.getElementById('f-imposto').value)||0;
+  const taxa=parseFloat(document.getElementById('f-taxa').value)||0;
+  const despDesigner=parseFloat(document.getElementById('f-desp-designer').value)||0;
+  const freteReal=parseFloat(document.getElementById('f-frete-real').value)||0;
+  const freteCobrado=parseFloat(document.getElementById('f-frete-cobrado').value)||0;
+
+  const totalVenda=venda*qty;
+  const totalCusto=custo*qty;
+  const valorImp=totalVenda*(imp/100);
+  const valorTaxa=totalVenda*(taxa/100);
+  const diferencaFrete=freteCobrado-freteReal; // positivo = lucra no frete
+
+  // Margem Bruta = Venda - Custo (sem impostos/taxas/extras)
+  const margemBruta=totalVenda-totalCusto;
+  // Lucro Líquido = Margem Bruta - Impostos - Taxa - Despesa Designer + Diferença Frete
+  const lucroLiq=margemBruta-valorImp-valorTaxa-despDesigner+diferencaFrete;
+  const margemLiq=totalVenda>0?(lucroLiq/totalVenda*100):0;
+
+  const setEl=(id,val,isNeg)=>{
+    const el=document.getElementById(id);if(!el)return;
+    if(typeof val==='string')el.textContent=val;
+    else el.textContent='R$ '+val.toFixed(2).replace('.',',');
+    el.className='computed'+(isNeg===undefined?(val<0?' neg':''):(isNeg?' neg':''));
+  };
+  setEl('f-margem-bruta-display',margemBruta);
+  setEl('f-lucro-display',lucroLiq);
+  setEl('f-margem-liq-display',margemLiq.toFixed(1)+'%',margemLiq<0);
+  return{lucro:lucroLiq,margemBruta,margemLiquida:margemLiq};
+}
+
+function calcLucroData(v){
+  const qty=v.quantidade||1,venda=v.precoVenda||0,custo=v.precoCusto||0;
+  const imp=v.imposto||0,taxa=v.taxa||0;
+  const despDesigner=v.despesaDesigner||0,freteReal=v.freteReal||0,freteCobrado=v.freteCobrado||0;
+  const totalVenda=venda*qty,totalCusto=custo*qty;
+  const margemBruta=totalVenda-totalCusto;
+  const lucro=margemBruta-totalVenda*(imp/100)-totalVenda*(taxa/100)-despDesigner+(freteCobrado-freteReal);
+  const margemLiquida=totalVenda>0?(lucro/totalVenda*100):0;
+  return{lucro,margemBruta,margemLiquida};
+}
+
+// ══ MODAL ══
+function abrirModal(idx=null){
+  editIndex=idx;
+  document.getElementById('modal-title').textContent=idx!==null?'Editar Pedido':'Novo Pedido';
+  const fields=(id,val)=>{const el=document.getElementById(id);if(el)el.value=val??'';};
+  if(idx!==null){
+    const v=vendas[idx];
+    fields('f-numero',v.numero);fields('f-numero-interno',v.numeroInterno);
+    fields('f-data',v.data);fields('f-cliente',v.cliente);
+    fields('f-tamanho',v.tamanho);fields('f-quantidade',v.quantidade);
+    fields('f-custo',v.precoCusto);fields('f-venda',v.precoVenda);
+    fields('f-imposto',v.imposto??4);fields('f-taxa',v.taxa??0);
+    fields('f-desp-designer',v.despesaDesigner||0);
+    fields('f-frete-real',v.freteReal||0);fields('f-frete-cobrado',v.freteCobrado||0);
+    fields('f-pagamento',v.pagamento);fields('f-designer',v.designer);
+    fields('f-status',v.status);fields('f-envio',v.envio);
+    fields('f-dias-prod',v.diasProd);fields('f-dias-entrega',v.diasEntrega);
+    fields('f-prazo-prod',v.prazoProd);fields('f-prazo-entrega',v.prazoEntrega);
+    fields('f-entregue',v.entregue||'Não');fields('f-obs',v.obs);
+    populateProdutos();
+    const sel=document.getElementById('f-produto-select');
+    if(sel&&sel.tagName==='SELECT'){
+      const opts=Array.from(sel.options).map(o=>o.value);
+      if(opts.includes(v.produto))sel.value=v.produto;
+      else if(v.produto)document.getElementById('f-produto-cell').innerHTML=`<input type="text" id="f-produto-select" style="width:100%;background:var(--bg2);border:1px solid var(--blue);border-radius:8px;padding:8px 12px;font-size:13px;font-family:var(--font-body);color:var(--text);outline:none;" value="${v.produto.replace(/"/g,"'")}">`;
+    }
+  }else{
+    ['f-numero-interno','f-cliente','f-tamanho','f-obs','f-dias-prod','f-dias-entrega','f-prazo-prod','f-prazo-entrega'].forEach(id=>fields(id,''));
+    fields('f-numero',gerarNumero());fields('f-data',new Date().toISOString().split('T')[0]);
+    fields('f-quantidade',1);fields('f-custo','');fields('f-venda','');
+    fields('f-imposto',4);fields('f-taxa',0);
+    fields('f-desp-designer',0);fields('f-frete-real',0);fields('f-frete-cobrado',0);
+    fields('f-pagamento','PIX');fields('f-status','Pendente');
+    fields('f-envio','Retirada');fields('f-entregue','Não');
+    populateProdutos();
+  }
+  calcLucro();
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function fecharModal(){document.getElementById('modal-overlay').classList.remove('open');editIndex=null;}
+function gerarNumero(){const max=vendas.reduce((m,v)=>Math.max(m,parseInt(v.numero)||0),0);return String(max+1).padStart(3,'0');}
+
+// ══ SALVAR ══
+async function salvarPedido(){
+  const r=calcLucro();
+  const v={
+    numero:document.getElementById('f-numero').value.trim(),
+    numeroInterno:document.getElementById('f-numero-interno').value.trim(),
+    data:document.getElementById('f-data').value,
+    cliente:document.getElementById('f-cliente').value.trim(),
+    produto:(document.getElementById('f-produto-select')||{value:''}).value.trim(),
+    tamanho:document.getElementById('f-tamanho').value.trim(),
+    quantidade:parseFloat(document.getElementById('f-quantidade').value)||1,
+    precoCusto:parseFloat(document.getElementById('f-custo').value)||0,
+    precoVenda:parseFloat(document.getElementById('f-venda').value)||0,
+    imposto:parseFloat(document.getElementById('f-imposto').value)||4,
+    taxa:parseFloat(document.getElementById('f-taxa').value)||0,
+    despesaDesigner:parseFloat(document.getElementById('f-desp-designer').value)||0,
+    freteReal:parseFloat(document.getElementById('f-frete-real').value)||0,
+    freteCobrado:parseFloat(document.getElementById('f-frete-cobrado').value)||0,
+    pagamento:document.getElementById('f-pagamento').value,
+    designer:document.getElementById('f-designer').value.trim(),
+    status:document.getElementById('f-status').value,
+    diasProd:parseInt(document.getElementById('f-dias-prod').value)||null,
+    diasEntrega:parseInt(document.getElementById('f-dias-entrega').value)||null,
+    prazoProd:document.getElementById('f-prazo-prod').value||null,
+    prazoEntrega:document.getElementById('f-prazo-entrega').value||null,
+    envio:document.getElementById('f-envio').value,
+    entregue:document.getElementById('f-entregue').value,
+    obs:document.getElementById('f-obs').value.trim(),
+    lucro:r.lucro,margemBruta:r.margemBruta,margemLiquida:r.margemLiquida
+  };
+  if(!v.cliente||!v.produto){alert('Preencha ao menos Cliente e Produto.');return;}
+  try{
+    showLoading(true);
+    if(editIndex!==null&&vendas[editIndex]?._id){
+      await sbFetch('vendas?id=eq.'+vendas[editIndex]._id,{method:'PATCH',prefer:'return=representation',body:JSON.stringify(toDb(v))});
+    }else{
+      await sbFetch('vendas',{method:'POST',prefer:'return=representation',body:JSON.stringify(toDb(v))});
+    }
+    await carregarVendas();fecharModal();
+  }catch(e){showError('Erro ao salvar: '+e.message);}
+  finally{showLoading(false);}
+}
+
+async function excluirPedido(idx){
+  if(!confirm('Excluir este pedido?'))return;
+  try{
+    showLoading(true);const id=vendas[idx]?._id;
+    if(id)await sbFetch('vendas?id=eq.'+id,{method:'DELETE',prefer:'return=minimal'});
+    await carregarVendas();
+  }catch(e){showError('Erro ao excluir: '+e.message);}
+  finally{showLoading(false);}
+}
+
+async function alterarStatus(idx,novoStatus){
+  if(!vendas[idx])return;
+  const entregue=novoStatus==='Entregue'?'Sim':(novoStatus!=='Entregue'&&vendas[idx].entregue==='Sim'?'Não':vendas[idx].entregue);
+  try{
+    const id=vendas[idx]._id;
+    if(id)await sbFetch('vendas?id=eq.'+id,{method:'PATCH',prefer:'return=minimal',body:JSON.stringify({status:novoStatus,entregue})});
+    vendas[idx].status=novoStatus;vendas[idx].entregue=entregue;
+    renderTable();updateKPIs();
+  }catch(e){showError('Erro: '+e.message);}
+}
+
+// ══ RENDER ══
+function fmt(v){return'R$ '+(v||0).toFixed(2).replace('.',',');}
+function fmtDate(d){if(!d)return'—';const[y,m,dia]=d.split('-');return`${dia}/${m}/${y}`;}
+function getStatusColor(s){return{'Pendente':'#ffd32a','Em Produção':'#00b4d8','Pronto':'#00c896','Entregue':'#6eb3f7','Cancelado':'#ff4757'}[s]||'#7986ab';}
+
+function getPrazoCell(prazo,entregue,tipo){
+  if(tipo==='entrega'&&entregue==='Sim')return'<span class="prazo-ok">✅</span>';
+  if(!prazo)return'<span class="prazo-none">—</span>';
+  const hoje=new Date();hoje.setHours(0,0,0,0);
+  const p=new Date(prazo+'T00:00:00');
+  const diff=Math.round((p-hoje)/86400000);
+  const icon=tipo==='prod'?'🔧':'🚚';
+  if(diff<0)return`<span class="prazo-vencido">🔴${fmtDate(prazo)}</span>`;
+  if(diff===0)return`<span class="prazo-hoje">${icon}Hoje!</span>`;
+  if(diff<=2)return`<span class="prazo-amanha">${icon}${fmtDate(prazo)}</span>`;
+  return`<span class="prazo-ok">${icon}${fmtDate(prazo)}</span>`;
+}
+
+function renderTable(){
+  const search=document.getElementById('search').value.toLowerCase();
+  const fStatus=document.getElementById('filter-status').value;
+  const fPag=document.getElementById('filter-pagamento').value;
+  const fEnt=document.getElementById('filter-entregue').value;
+  updateDynamicFilters();
+  const fDesigner=document.getElementById('filter-designer').value;
+  const fProduto=document.getElementById('filter-produto').value;
+  const fPeriodo=document.getElementById('filter-periodo').value;
+  const fDe=document.getElementById('filter-de')?.value;
+  const fAte=document.getElementById('filter-ate')?.value;
+
+  let data=vendas.filter((v,i)=>{
+    v._idx=i;
+    const txt=`${v.numero} ${v.numeroInterno||''} ${v.cliente} ${v.produto} ${v.designer}`.toLowerCase();
+    if(search&&!txt.includes(search))return false;
+    if(fStatus&&v.status!==fStatus)return false;
+    if(fPag&&v.pagamento!==fPag)return false;
+    if(fEnt&&v.entregue!==fEnt)return false;
+    if(fDesigner&&v.designer!==fDesigner)return false;
+    if(fProduto&&v.produto!==fProduto)return false;
+    if(fPeriodo==='hoje'){if(v.data!==new Date().toISOString().split('T')[0])return false;}
+    else if(fPeriodo==='mes'){const now=new Date();const ym=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;if(!v.data?.startsWith(ym))return false;}
+    else if(fPeriodo==='custom'){if(fDe&&v.data<fDe)return false;if(fAte&&v.data>fAte)return false;}
+    return true;
+  });
+
+  data.sort((a,b)=>{
+    let va=a[sortCol]??'',vb=b[sortCol]??'';
+    if(typeof va==='string'){va=va.toLowerCase();vb=vb.toLowerCase();}
+    return va<vb?sortDir:va>vb?-sortDir:0;
+  });
+
+  const tbody=document.getElementById('table-body');
+  const empty=document.getElementById('empty-state');
+  if(data.length===0){tbody.innerHTML='';empty.style.display='block';updateKPIs([]);return;}
+  empty.style.display='none';
+
+  tbody.innerHTML=data.map(v=>{
+    const lc=v.lucro>=0?'lucro-pos':'lucro-neg';
+    const mlc=v.margemLiquida>=0?'lucro-pos':'lucro-neg';
+    return`<tr>
+      <td><strong style="color:var(--cyan)">#${v.numero||'—'}</strong></td>
+      <td style="color:var(--gold)">${v.numeroInterno||'—'}</td>
+      <td>${fmtDate(v.data)}</td>
+      <td>${getPrazoCell(v.prazoProd,v.entregue,'prod')}</td>
+      <td>${getPrazoCell(v.prazoEntrega,v.entregue,'entrega')}</td>
+      <td><strong>${v.cliente||'—'}</strong></td>
+      <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis" title="${v.produto||''}">${v.produto||'—'}</td>
+      <td>${v.tamanho||'—'}</td>
+      <td style="text-align:center">${v.quantidade}</td>
+      <td>${fmt(v.precoCusto)}</td>
+      <td><strong>${fmt(v.precoVenda)}</strong></td>
+      <td style="text-align:center">${v.imposto}%</td>
+      <td style="text-align:center">${v.taxa}%</td>
+      <td style="color:#a78bfa">${fmt(v.despesaDesigner)}</td>
+      <td>${fmt(v.freteReal)}</td>
+      <td>${fmt(v.freteCobrado)}</td>
+      <td class="${lc}">${fmt(v.margemBruta)}</td>
+      <td class="${lc}">${fmt(v.lucro)}</td>
+      <td class="${mlc}">${(v.margemLiquida||0).toFixed(1)}%</td>
+      <td>${v.pagamento||'—'}</td>
+      <td>${v.designer||'—'}</td>
+      <td><select onchange="alterarStatus(${v._idx},this.value)" style="background:transparent;border:1px solid var(--border);border-radius:20px;padding:3px 8px;font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;outline:none;color:${getStatusColor(v.status)};">
+        <option value="Pendente" ${v.status==='Pendente'?'selected':''} style="background:#1e2a45;color:#ffd32a">Pendente</option>
+        <option value="Em Produção" ${v.status==='Em Produção'?'selected':''} style="background:#1e2a45;color:#00b4d8">Em Produção</option>
+        <option value="Pronto" ${v.status==='Pronto'?'selected':''} style="background:#1e2a45;color:#00c896">Pronto</option>
+        <option value="Entregue" ${v.status==='Entregue'?'selected':''} style="background:#1e2a45;color:#6eb3f7">Entregue</option>
+        <option value="Cancelado" ${v.status==='Cancelado'?'selected':''} style="background:#1e2a45;color:#ff4757">Cancelado</option>
+      </select></td>
+      <td>${v.envio||'—'}</td>
+      <td class="${v.entregue==='Sim'?'entregue-sim':'entregue-nao'}">${v.entregue==='Sim'?'✅':'⏳'}</td>
+      <td style="max-width:100px;overflow:hidden;text-overflow:ellipsis" title="${v.obs||''}">${v.obs?'📝'+v.obs.slice(0,15)+'…':'—'}</td>
+      <td><div class="acoes">
+        <button class="btn btn-edit" onclick="abrirModal(${v._idx})">✏️</button>
+        <button class="btn btn-danger" onclick="excluirPedido(${v._idx})">🗑</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('total-registros').textContent=`${data.length} (de ${vendas.length})`;
+  updateKPIs(data.map(v=>vendas[v._idx]).filter(Boolean));
+}
+
+function updateKPIs(filtered){
+  const base=filtered||vendas;
+  const total=base.length;
+  const fat=base.reduce((s,v)=>s+(v.precoVenda*(v.quantidade||1)),0);
+  const lucro=base.reduce((s,v)=>s+(v.lucro||0),0);
+  const ticket=total?fat/total:0;
+  const pendentes=base.filter(v=>v.status==='Pendente'||v.status==='Em Produção').length;
+  const margem=fat>0?(lucro/fat*100):0;
+
+  document.getElementById('kpi-pedidos').textContent=total+(filtered?' *':'');
+  document.getElementById('kpi-faturamento').textContent='R$ '+fat.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,'.')+(filtered?' *':'');
+  document.getElementById('kpi-lucro').textContent='R$ '+lucro.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,'.')+(filtered?' *':'');
+  document.getElementById('kpi-lucro').style.color=lucro>=0?'var(--green)':'var(--red)';
+  document.getElementById('kpi-margem').textContent=margem.toFixed(1)+'%';
+  document.getElementById('kpi-margem').style.color=margem>=0?'var(--green)':'var(--red)';
+  document.getElementById('kpi-ticket').textContent='R$ '+ticket.toFixed(0);
+  document.getElementById('kpi-pendentes').textContent=pendentes;
+  const ind=document.getElementById('filter-indicator');
+  if(ind)ind.style.display=filtered?'inline':'none';
+}
+
+function updateDynamicFilters(){
+  const ds=[...new Set(vendas.map(v=>v.designer).filter(Boolean))].sort();
+  const dSel=document.getElementById('filter-designer');const curD=dSel.value;
+  dSel.innerHTML='<option value="">Todos designers</option>'+ds.map(d=>`<option value="${d}" ${d===curD?'selected':''}>${d}</option>`).join('');
+  const ps=[...new Set(vendas.map(v=>v.produto).filter(Boolean))].sort();
+  const pSel=document.getElementById('filter-produto');const curP=pSel.value;
+  pSel.innerHTML='<option value="">Todos produtos</option>'+ps.map(p=>`<option value="${p}" ${p===curP?'selected':''}>${p.length>35?p.slice(0,35)+'…':p}</option>`).join('');
+}
+
+function togglePeriodo(){
+  const val=document.getElementById('filter-periodo').value;
+  document.getElementById('custom-periodo').style.display=val==='custom'?'flex':'none';
+  renderTable();
+}
+
+function sortBy(col){if(sortCol===col)sortDir*=-1;else{sortCol=col;sortDir=1;}renderTable();}
+
+function exportCSV(){
+  const h=['Nº','Interno','Data','Prazo Prod','Prazo Entrega','Cliente','Produto','Tamanho','Qtd','Custo','Venda','Imp%','Taxa%','Desp.Designer','Frete Real','Frete Cobrado','M.Bruta','Lucro','M.Liq%','Pagamento','Designer','Status','Envio','Entregue','Obs'];
+  const rows=vendas.map(v=>[v.numero,v.numeroInterno||'',v.data,v.prazoProd||'',v.prazoEntrega||'',v.cliente,v.produto,v.tamanho,v.quantidade,v.precoCusto,v.precoVenda,v.imposto,v.taxa,v.despesaDesigner||0,v.freteReal||0,v.freteCobrado||0,(v.margemBruta||0).toFixed(2),(v.lucro||0).toFixed(2),(v.margemLiquida||0).toFixed(1),v.pagamento,v.designer,v.status,v.envio,v.entregue,(v.obs||'').replace(/,/g,' ')]);
+  const csv=[h,...rows].map(r=>r.join(',')).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download='vendas_kl_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+}
+
+// ══ PRAZOS ══
+function getFeriados(){
+  const anos=[new Date().getFullYear(),new Date().getFullYear()+1];
+  const f=new Set();
+  anos.forEach(y=>{
+    ['01-01','04-21','05-01','09-07','10-12','11-02','11-15','11-20','12-25'].forEach(d=>f.add(`${y}-${d}`));
+    const a=y%19,b=Math.floor(y/100),c=y%100,d2=Math.floor(b/4),e=b%4,ff=Math.floor((b+8)/25),g=Math.floor((b-ff+1)/3),h=(19*a+b-d2-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451),month=Math.floor((h+l-7*m+114)/31),day=((h+l-7*m+114)%31)+1;
+    const pascoa=new Date(y,month-1,day);
+    [-48,-47,-2,60].forEach(offset=>{const dt=new Date(pascoa);dt.setDate(dt.getDate()+offset);f.add(dt.toISOString().split('T')[0]);});
+    f.add(pascoa.toISOString().split('T')[0]);
+  });
+  return f;
+}
+
+function addDiasUteis(dataInicio,dias){
+  const f=getFeriados();let dt=new Date(dataInicio+'T00:00:00'),count=0;
+  while(count<dias){dt.setDate(dt.getDate()+1);const dow=dt.getDay(),iso=dt.toISOString().split('T')[0];if(dow!==0&&dow!==6&&!f.has(iso))count++;}
+  return dt.toISOString().split('T')[0];
+}
+
+function calcPrazos(){
+  const base=document.getElementById('f-data').value||new Date().toISOString().split('T')[0];
+  const dp=parseInt(document.getElementById('f-dias-prod').value);
+  const de=parseInt(document.getElementById('f-dias-entrega').value);
+  if(dp&&dp>0){const dataProd=addDiasUteis(base,dp);document.getElementById('f-prazo-prod').value=dataProd;if(de&&de>0)document.getElementById('f-prazo-entrega').value=addDiasUteis(dataProd,de);}
+}
+
+function recalcEntrega(){
+  const dp=document.getElementById('f-prazo-prod').value;
+  const de=parseInt(document.getElementById('f-dias-entrega').value);
+  if(dp&&de&&de>0)document.getElementById('f-prazo-entrega').value=addDiasUteis(dp,de);
+}
+
+function verificarPrazos(silencioso=false){
+  const hoje=new Date();hoje.setHours(0,0,0,0);const alertas=[];
+  vendas.forEach(v=>{
+    if(v.status==='Cancelado'||v.status==='Entregue')return;
+    if(v.prazoProd&&v.status!=='Pronto'){const diff=Math.round((new Date(v.prazoProd+'T00:00:00')-hoje)/86400000);if(diff<=2)alertas.push({...v,diff,tipo:'prod'});}
+    if(v.prazoEntrega&&v.entregue!=='Sim'){const diff=Math.round((new Date(v.prazoEntrega+'T00:00:00')-hoje)/86400000);if(diff<=1)alertas.push({...v,diff,tipo:'entrega'});}
+  });
+  alertas.sort((a,b)=>a.diff-b.diff);
+  if(alertas.length===0){if(!silencioso){document.getElementById('alert-prazo-list').innerHTML='<div style="text-align:center;padding:20px;color:var(--green)">✅ Nenhum prazo urgente!</div>';document.getElementById('alert-prazo-overlay').classList.remove('hidden');}return;}
+  const grupos={};
+  alertas.forEach(a=>{const key=a._id||a.numero;if(!grupos[key])grupos[key]={v:a,tipos:[]};grupos[key].tipos.push(a);});
+  const items=Object.values(grupos).map(({v,tipos})=>{
+    const tags=tipos.map(t=>{
+      const icon=t.tipo==='prod'?'🔧 Prod':'🚚 Entrega';
+      const cls=t.diff<0?'tag-vencido':t.diff===0?'tag-hoje':'tag-amanha';
+      const label=t.diff<0?`${icon} — Vencido há ${Math.abs(t.diff)}d`:t.diff===0?`${icon} — HOJE!`:t.diff===1?`${icon} — Amanhã`:`${icon} — ${t.diff}d`;
+      return`<span class="alert-item-tag ${cls}" style="display:block;margin-bottom:3px">${label}</span>`;
+    }).join('');
+    const cls=tipos.some(t=>t.diff<=0)?'vencido':tipos.some(t=>t.diff===1)?'hoje':'amanha';
+    return`<div class="alert-item ${cls}"><div class="alert-item-info"><strong>#${v.numeroInterno||v.numero||'?'} — ${v.cliente}</strong><p>${v.produto||''} · ${v.status}</p></div><div style="text-align:right">${tags}</div></div>`;
+  }).join('');
+  document.getElementById('alert-prazo-list').innerHTML=items;
+  document.getElementById('alert-prazo-overlay').classList.remove('hidden');
+}
+
+function fecharAlertaPrazo(){document.getElementById('alert-prazo-overlay').classList.add('hidden');localStorage.setItem('kl_alerta_visto',new Date().toDateString());}
+function verificarAoAbrir(){
+  const hoje=new Date().toDateString();if(localStorage.getItem('kl_alerta_visto')===hoje)return;
+  const hojeD=new Date();hojeD.setHours(0,0,0,0);
+  const tem=vendas.some(v=>{
+    if(v.status==='Cancelado'||v.status==='Entregue')return false;
+    if(v.prazoProd&&v.status!=='Pronto'&&Math.round((new Date(v.prazoProd+'T00:00:00')-hojeD)/86400000)<=2)return true;
+    if(v.prazoEntrega&&v.entregue!=='Sim'&&Math.round((new Date(v.prazoEntrega+'T00:00:00')-hojeD)/86400000)<=1)return true;
+    return false;
+  });
+  if(tem)verificarPrazos(false);
+}
+
+function ativarNotificacoes(){
+  if(!('Notification'in window)){document.getElementById('notif-status').textContent='⚠️ Não suportado.';return;}
+  Notification.requestPermission().then(p=>{
+    if(p==='granted'){const h=parseInt(document.getElementById('notif-hora').value);localStorage.setItem('kl_notif_hora',h);document.getElementById('notif-status').textContent=`✅ Ativo às ${h}:00!`;agendarNotificacao(h);}
+    else document.getElementById('notif-status').textContent='❌ Permissão negada.';
+  });
+}
+function agendarNotificacao(h){const agora=new Date(),alvo=new Date();alvo.setHours(h,0,0,0);if(alvo<=agora)alvo.setDate(alvo.getDate()+1);setTimeout(()=>{dispararNotificacao();setInterval(dispararNotificacao,86400000);},alvo-agora);}
+function dispararNotificacao(){
+  const hoje=new Date();hoje.setHours(0,0,0,0);
+  const n=vendas.filter(v=>{if(v.status==='Cancelado'||v.status==='Entregue')return false;if(v.prazoProd&&v.status!=='Pronto'&&Math.round((new Date(v.prazoProd+'T00:00:00')-hoje)/86400000)<=2)return true;if(v.prazoEntrega&&v.entregue!=='Sim'&&Math.round((new Date(v.prazoEntrega+'T00:00:00')-hoje)/86400000)<=1)return true;return false;}).length;
+  if(n>0&&Notification.permission==='granted')new Notification('⏰ KL Market — Prazos Urgentes',{body:`${n} pedido(s) vencendo! Abra o sistema.`});
+}
+
+// ══ DASHBOARD ══
+let charts={};
+function destroyChart(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
+const COLORS=['#00b4d8','#00c896','#e91e8c','#f5a623','#a855f7','#ff4757','#ffd32a','#1a6bc4','#06b6d4','#10b981'];
+
+function getDashData(){
+  const periodo=document.getElementById('dash-periodo').value;
+  const de=document.getElementById('dash-de')?.value;
+  const ate=document.getElementById('dash-ate')?.value;
+  const hoje=new Date();hoje.setHours(0,0,0,0);
+
+  return vendas.filter(v=>{
+    if(!v.data)return false;
+    const vd=new Date(v.data+'T00:00:00');
+    if(periodo==='custom'){if(de&&v.data<de)return false;if(ate&&v.data>ate)return false;return true;}
+    if(periodo==='mes'){const now=new Date();return v.data.startsWith(`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`);}
+    const days=parseInt(periodo)||15;const cutoff=new Date(hoje);cutoff.setDate(cutoff.getDate()-days);return vd>=cutoff;
+  });
+}
+
+function toggleDashPeriodo(){
+  const val=document.getElementById('dash-periodo').value;
+  const box=document.getElementById('dash-custom');
+  if(box)box.style.display=val==='custom'?'flex':'none';
+  renderDashboard();
+}
+
+function renderDashboard(){
+  const data=getDashData();
+  const fat=data.reduce((s,v)=>s+(v.precoVenda*(v.quantidade||1)),0);
+  const lucro=data.reduce((s,v)=>s+(v.lucro||0),0);
+  const ticket=data.length?fat/data.length:0;
+  const margem=fat>0?(lucro/fat*100):0;
+
+  document.getElementById('d-pedidos').textContent=data.length;
+  document.getElementById('d-fat').textContent='R$'+fat.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+  document.getElementById('d-lucro').textContent='R$'+lucro.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+  document.getElementById('d-lucro').style.color=lucro>=0?'var(--green)':'var(--red)';
+  document.getElementById('d-margem').textContent=margem.toFixed(1)+'%';
+  document.getElementById('d-margem').style.color=margem>=0?'var(--green)':'var(--red)';
+  document.getElementById('d-ticket').textContent='R$'+ticket.toFixed(0);
+
+  const chartOpts={responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e8eaf6',font:{family:'DM Sans',size:11}}},tooltip:{backgroundColor:'#1e2a45',titleColor:'#e8eaf6',bodyColor:'#7986ab'}},scales:{x:{ticks:{color:'#7986ab',font:{size:10}},grid:{color:'rgba(255,255,255,0.05)'}},y:{ticks:{color:'#7986ab',font:{size:10}},grid:{color:'rgba(255,255,255,0.05)'}}}};
+
+  // 1. Faturamento x Lucro por dia
+  const byDay={};
+  data.forEach(v=>{if(!v.data)return;const d=fmtDate(v.data);if(!byDay[d])byDay[d]={fat:0,lucro:0};byDay[d].fat+=(v.precoVenda*(v.quantidade||1));byDay[d].lucro+=(v.lucro||0);});
+  const dias=Object.keys(byDay).sort((a,b)=>a.localeCompare(b));
+  destroyChart('fatLucro');
+  const c1=document.getElementById('chart-fatLucro');
+  if(c1){charts.fatLucro=new Chart(c1,{type:'bar',data:{labels:dias,datasets:[{label:'Faturamento',data:dias.map(d=>byDay[d].fat),backgroundColor:'rgba(0,180,216,0.7)',borderColor:'#00b4d8',borderWidth:1},{label:'Lucro',data:dias.map(d=>byDay[d].lucro),backgroundColor:'rgba(0,200,150,0.7)',borderColor:'#00c896',borderWidth:1}]},options:{...chartOpts,plugins:{...chartOpts.plugins,legend:{...chartOpts.plugins.legend,display:true}}}});}
+
+  // 2. Top 6 produtos
+  const byProd={};
+  data.forEach(v=>{if(!v.produto)return;const k=v.produto.split('–')[0].trim().slice(0,30);byProd[k]=(byProd[k]||0)+(v.quantidade||1);});
+  const top6=Object.entries(byProd).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  destroyChart('produtos');
+  const c2=document.getElementById('chart-produtos');
+  if(c2)charts.produtos=new Chart(c2,{type:'doughnut',data:{labels:top6.map(e=>e[0]),datasets:[{data:top6.map(e=>e[1]),backgroundColor:COLORS,borderWidth:2,borderColor:'#161f35'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#e8eaf6',font:{family:'DM Sans',size:10},padding:8}},tooltip:{backgroundColor:'#1e2a45',titleColor:'#e8eaf6',bodyColor:'#7986ab'}}}});
+
+  // 3. Pagamento
+  const byPag={};data.forEach(v=>{if(v.pagamento)byPag[v.pagamento]=(byPag[v.pagamento]||0)+1;});
+  destroyChart('pagamento');
+  const c3=document.getElementById('chart-pagamento');
+  if(c3)charts.pagamento=new Chart(c3,{type:'pie',data:{labels:Object.keys(byPag),datasets:[{data:Object.values(byPag),backgroundColor:COLORS,borderWidth:2,borderColor:'#161f35'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#e8eaf6',font:{family:'DM Sans',size:10},padding:8}},tooltip:{backgroundColor:'#1e2a45'}}}});
+
+  // 4. Designer qtd
+  const byDesQtd={};data.forEach(v=>{if(v.designer)byDesQtd[v.designer]=(byDesQtd[v.designer]||0)+1;});
+  const desQtdKeys=Object.keys(byDesQtd).sort((a,b)=>byDesQtd[b]-byDesQtd[a]);
+  destroyChart('designer-qtd');
+  const c4=document.getElementById('chart-designer-qtd');
+  if(c4)charts['designer-qtd']=new Chart(c4,{type:'bar',data:{labels:desQtdKeys,datasets:[{label:'Pedidos',data:desQtdKeys.map(k=>byDesQtd[k]),backgroundColor:'rgba(0,180,216,0.7)',borderColor:'#00b4d8',borderWidth:1}]},options:{...chartOpts,plugins:{...chartOpts.plugins,legend:{display:false}}}});
+
+  // 5. Designer despesa
+  const byDesDesp={};data.forEach(v=>{if(v.designer&&v.despesaDesigner)byDesDesp[v.designer]=(byDesDesp[v.designer]||0)+(v.despesaDesigner||0);});
+  const desDespKeys=Object.keys(byDesDesp).sort((a,b)=>byDesDesp[b]-byDesDesp[a]);
+  destroyChart('designer-desp');
+  const c5=document.getElementById('chart-designer-desp');
+  if(c5)charts['designer-desp']=new Chart(c5,{type:'bar',data:{labels:desDespKeys,datasets:[{label:'Despesa (R$)',data:desDespKeys.map(k=>byDesDesp[k]),backgroundColor:'rgba(168,85,247,0.7)',borderColor:'#a855f7',borderWidth:1}]},options:{...chartOpts,plugins:{...chartOpts.plugins,legend:{display:false}}}});
+
+  // 6. Status
+  const bySt={};data.forEach(v=>{if(v.status)bySt[v.status]=(bySt[v.status]||0)+1;});
+  const stColors={'Pendente':'#ffd32a','Em Produção':'#00b4d8','Pronto':'#00c896','Entregue':'#6eb3f7','Cancelado':'#ff4757'};
+  destroyChart('status');
+  const c6=document.getElementById('chart-status');
+  if(c6)charts.status=new Chart(c6,{type:'doughnut',data:{labels:Object.keys(bySt),datasets:[{data:Object.values(bySt),backgroundColor:Object.keys(bySt).map(s=>stColors[s]||'#7986ab'),borderWidth:2,borderColor:'#161f35'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#e8eaf6',font:{family:'DM Sans',size:10},padding:8}},tooltip:{backgroundColor:'#1e2a45'}}}});
+
+  // 7. Envio
+  const byEnv={};data.forEach(v=>{if(v.envio)byEnv[v.envio]=(byEnv[v.envio]||0)+1;});
+  destroyChart('envio');
+  const c7=document.getElementById('chart-envio');
+  if(c7)charts.envio=new Chart(c7,{type:'pie',data:{labels:Object.keys(byEnv),datasets:[{data:Object.values(byEnv),backgroundColor:COLORS,borderWidth:2,borderColor:'#161f35'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#e8eaf6',font:{family:'DM Sans',size:10},padding:8}},tooltip:{backgroundColor:'#1e2a45'}}}});
+}
+
+document.getElementById('modal-overlay').addEventListener('click',function(e){if(e.target===this)fecharModal();});
+
+// INIT
+populateProdutos();
+carregarVendas();
+</script>
 </body>
 </html>
