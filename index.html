@@ -151,7 +151,7 @@ tbody td{padding:9px 11px;vertical-align:middle;white-space:nowrap;}
 </head>
 <body>
 
-<div class="app-header" style="position:relative">
+<div id="app-content" style="display:none"><div class="app-header" style="position:relative">
   <h1>KL <span>MARKET</span> — Controle de Vendas</h1>
   <div style="display:flex;gap:10px;align-items:center">
     <button class="btn btn-export" style="padding:7px 14px;font-size:12px" onclick="verificarPrazos()">🔔 Prazos</button>
@@ -519,6 +519,7 @@ async function fazerLogout(){
   await sb.auth.signOut();
   currentUser=null;currentToken=null;vendas=[];
   document.getElementById('login-screen').classList.remove('hidden');
+  document.getElementById('app-content').style.display='none';
   document.getElementById('user-display').textContent='';
   document.getElementById('login-email').value='';
   document.getElementById('login-senha').value='';
@@ -539,6 +540,7 @@ async function iniciarSessao(user, token){
   const nome = user.user_metadata?.nome || user.email.split('@')[0];
   document.getElementById('user-display').textContent = '👤 '+nome;
   document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('app-content').style.display='block';
   await carregarVendas();
 }
 
@@ -1186,6 +1188,7 @@ populateProdutos();
 sb.auth.onAuthStateChange((event, session)=>{
   if(event==='SIGNED_OUT'){
     document.getElementById('login-screen').classList.remove('hidden');
+    document.getElementById('app-content').style.display='none';
   }
 });
 </script>
@@ -1283,6 +1286,7 @@ sb.auth.onAuthStateChange((event, session)=>{
 </div>
 
 
+</div><!-- end app-content -->
 <!-- ══ LOGIN SCREEN ══ -->
 <div id="login-screen">
   <div class="login-card">
