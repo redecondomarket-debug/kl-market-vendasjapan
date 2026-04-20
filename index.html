@@ -58,9 +58,9 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 .btn-export{background:var(--card);color:var(--gold);border:1px solid rgba(245,166,35,0.3);}
 
 /* TABLE */
-.table-wrap{padding:0 32px 32px;overflow-x:auto;}
+.table-wrap{padding:0 32px 32px;overflow-x:auto;overflow-y:visible;}
 table{width:100%;border-collapse:collapse;font-size:12px;min-width:2000px;}
-thead tr{background:var(--navy);position:sticky;top:106px;}
+thead tr{background:var(--navy);position:sticky;top:0;z-index:10;}
 thead th{padding:10px 11px;text-align:left;font-family:var(--font-head);font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);white-space:nowrap;cursor:pointer;user-select:none;border-bottom:1px solid var(--border);}
 thead th:hover{color:var(--cyan);}
 tbody tr{border-bottom:1px solid var(--border);transition:background .15s;}
@@ -974,14 +974,14 @@ function renderDashboard(){
   const desQtdKeys=Object.keys(byDesQtd).sort((a,b)=>byDesQtd[b]-byDesQtd[a]);
   destroyChart('designer-qtd');
   const c4=document.getElementById('chart-designer-qtd');
-  if(c4)charts['designer-qtd']=new Chart(c4,{type:'bar',data:{labels:desQtdKeys,datasets:[{label:'Pedidos',data:desQtdKeys.map(k=>byDesQtd[k]),backgroundColor:'rgba(0,180,216,0.7)',borderColor:'#00b4d8',borderWidth:1}]},options:{...chartOpts,plugins:{...chartOpts.plugins,legend:{display:false}}}});
+  if(c4)charts['designer-qtd']=new Chart(c4,{type:'bar',data:{labels:desQtdKeys,datasets:[{label:'Pedidos',data:desQtdKeys.map(k=>byDesQtd[k]),backgroundColor:'rgba(0,180,216,0.7)',borderColor:'#00b4d8',borderWidth:1}]},options:{...chartOpts,plugins:{...chartOpts.plugins,legend:{display:false},datalabels:{color:'#fff',anchor:'end',align:'top',font:{weight:'bold',size:11},formatter:(v)=>v}}}});
 
   // 5. Designer despesa
   const byDesDesp={};data.forEach(v=>{if(v.designer&&v.despesaDesigner)byDesDesp[v.designer]=(byDesDesp[v.designer]||0)+(v.despesaDesigner||0);});
   const desDespKeys=Object.keys(byDesDesp).sort((a,b)=>byDesDesp[b]-byDesDesp[a]);
   destroyChart('designer-desp');
   const c5=document.getElementById('chart-designer-desp');
-  if(c5)charts['designer-desp']=new Chart(c5,{type:'bar',data:{labels:desDespKeys,datasets:[{label:'Despesa (R$)',data:desDespKeys.map(k=>byDesDesp[k]),backgroundColor:'rgba(168,85,247,0.7)',borderColor:'#a855f7',borderWidth:1}]},options:{...chartOpts,plugins:{...chartOpts.plugins,legend:{display:false}}}});
+  if(c5)charts['designer-desp']=new Chart(c5,{type:'bar',data:{labels:desDespKeys,datasets:[{label:'Despesa (R$)',data:desDespKeys.map(k=>byDesDesp[k]),backgroundColor:'rgba(168,85,247,0.7)',borderColor:'#a855f7',borderWidth:1}]},options:{...chartOpts,plugins:{...chartOpts.plugins,legend:{display:false},datalabels:{color:'#fff',anchor:'end',align:'top',font:{weight:'bold',size:11},formatter:(v)=>'R$'+v.toFixed(0)}}}});
 
   // 6. Status
   const bySt={};data.forEach(v=>{if(v.status)bySt[v.status]=(bySt[v.status]||0)+1;});
