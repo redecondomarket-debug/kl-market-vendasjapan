@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KL Market — Controle de Vendas</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
 <style>
@@ -155,6 +156,10 @@ tbody td{padding:9px 11px;vertical-align:middle;white-space:nowrap;}
   <div style="display:flex;gap:10px;align-items:center">
     <button class="btn btn-export" style="padding:7px 14px;font-size:12px" onclick="verificarPrazos()">🔔 Prazos</button>
     <span id="total-registros" style="font-size:12px;color:var(--muted)">0 pedidos</span>
+    <div style="display:flex;align-items:center;gap:8px;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:5px 12px;">
+      <span id="user-display" style="font-size:12px;color:var(--cyan);font-weight:600"></span>
+      <button onclick="fazerLogout()" style="background:none;border:none;color:var(--muted);font-size:11px;cursor:pointer;font-family:var(--font-body);padding:0;" title="Sair">⏻ Sair</button>
+    </div>
   </div>
   <div class="header-accent"></div>
 </div>
@@ -436,16 +441,108 @@ tbody td{padding:9px 11px;vertical-align:middle;white-space:nowrap;}
 const SUPABASE_URL = 'https://ubsskigctaybgbljozky.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_yQ4yL_WfUh_ex6QoSjvDlg_mGZzp4Qk';
 
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let currentUser = null;
+let currentToken = null;
+
 async function sbFetch(path, opts={}) {
+  const token = currentToken || SUPABASE_KEY;
   const res = await fetch(SUPABASE_URL+'/rest/v1/'+path, {
-    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':opts.prefer||'return=representation',...opts.headers},
+    headers:{
+      'apikey':SUPABASE_KEY,
+      'Authorization':'Bearer '+token,
+      'Content-Type':'application/json',
+      'Prefer':opts.prefer||'return=representation',
+      ...opts.headers
+    },
     ...opts
   });
   if(!res.ok){const e=await res.text();throw new Error(e);}
   const txt=await res.text();return txt?JSON.parse(txt):[];
 }
 
-function toDb(v){return{
+// ── AUTH FUNCTIONS ──
+function switchLoginTab(tab){
+  document.getElementById('lf-login').style.display = tab==='login'?'block':'none';
+  document.getElementById('lf-cadastro').style.display = tab==='cadastro'?'block':'none';
+  document.getElementById('lt-login').classList.toggle('active', tab==='login');
+  document.getElementById('lt-cadastro').classList.toggle('active', tab==='cadastro');
+}
+
+async function fazerLogin(){
+  const email = document.getElementById('login-email').value.trim();
+  const senha = document.getElementById('login-senha').value;
+  const errEl = document.getElementById('login-error');
+  const btn = document.getElementById('btn-login');
+  errEl.classList.remove('show');
+  if(!email||!senha){errEl.textContent='Preencha e-mail e senha.';errEl.classList.add('show');return;}
+  btn.disabled=true;btn.textContent='Entrando...';
+  try{
+    const {data,error} = await sb.auth.signInWithPassword({email,password:senha});
+    if(error)throw error;
+    await iniciarSessao(data.user, data.session.access_token);
+  }catch(e){
+    errEl.textContent = e.message==='Invalid login credentials'?'E-mail ou senha incorretos.':e.message;
+    errEl.classList.add('show');
+  }finally{btn.disabled=false;btn.textContent='Entrar';}
+}
+
+async function fazerCadastro(){
+  const nome = document.getElementById('cadastro-nome').value.trim();
+  const email = document.getElementById('cadastro-email').value.trim();
+  const senha = document.getElementById('cadastro-senha').value;
+  const senha2 = document.getElementById('cadastro-senha2').value;
+  const errEl = document.getElementById('cadastro-error');
+  const sucEl = document.getElementById('cadastro-success');
+  const btn = document.getElementById('btn-cadastro');
+  errEl.classList.remove('show');sucEl.classList.remove('show');
+  if(!nome||!email||!senha){errEl.textContent='Preencha todos os campos.';errEl.classList.add('show');return;}
+  if(senha.length<6){errEl.textContent='Senha deve ter pelo menos 6 caracteres.';errEl.classList.add('show');return;}
+  if(senha!==senha2){errEl.textContent='As senhas não coincidem.';errEl.classList.add('show');return;}
+  btn.disabled=true;btn.textContent='Criando conta...';
+  try{
+    const {data,error} = await sb.auth.signUp({email,password:senha,options:{data:{nome}}});
+    if(error)throw error;
+    if(data.session){
+      await iniciarSessao(data.user, data.session.access_token);
+    } else {
+      sucEl.textContent='Conta criada! Verifique seu e-mail para confirmar.';
+      sucEl.classList.add('show');
+    }
+  }catch(e){
+    errEl.textContent = e.message;
+    errEl.classList.add('show');
+  }finally{btn.disabled=false;btn.textContent='Criar Conta';}
+}
+
+async function fazerLogout(){
+  await sb.auth.signOut();
+  currentUser=null;currentToken=null;vendas=[];
+  document.getElementById('login-screen').classList.remove('hidden');
+  document.getElementById('user-display').textContent='';
+  document.getElementById('login-email').value='';
+  document.getElementById('login-senha').value='';
+}
+
+async function esqueceuSenha(){
+  const email = document.getElementById('login-email').value.trim();
+  const errEl = document.getElementById('login-error');
+  if(!email){errEl.textContent='Digite seu e-mail primeiro.';errEl.classList.add('show');return;}
+  const {error} = await sb.auth.resetPasswordForEmail(email);
+  if(error){errEl.textContent=error.message;errEl.classList.add('show');}
+  else{errEl.style.color='var(--green)';errEl.textContent='E-mail de redefinição enviado!';errEl.classList.add('show');}
+}
+
+async function iniciarSessao(user, token){
+  currentUser = user;
+  currentToken = token;
+  const nome = user.user_metadata?.nome || user.email.split('@')[0];
+  document.getElementById('user-display').textContent = '👤 '+nome;
+  document.getElementById('login-screen').classList.add('hidden');
+  await carregarVendas();
+}
+
+function toDb(v){return{user_id:currentUser?.id||null,user_email:currentUser?.email||null,
   numero:v.numero||null,numero_interno:v.numeroInterno||null,data:v.data||null,
   cliente:v.cliente||null,produto:v.produto||null,tamanho:v.tamanho||null,
   quantidade:v.quantidade||1,preco_custo:v.precoCusto||0,preco_venda:v.precoVenda||0,
@@ -1075,7 +1172,22 @@ document.getElementById('modal-overlay').addEventListener('click',function(e){if
 
 // INIT
 populateProdutos();
-carregarVendas();
+
+// Check existing session
+(async()=>{
+  const {data:{session}} = await sb.auth.getSession();
+  if(session){
+    await iniciarSessao(session.user, session.access_token);
+  }
+  // else: login screen stays visible
+})();
+
+// Listen for auth changes
+sb.auth.onAuthStateChange((event, session)=>{
+  if(event==='SIGNED_OUT'){
+    document.getElementById('login-screen').classList.remove('hidden');
+  }
+});
 </script>
 
 <!-- ══ ABA CALCULADORA ══ -->
@@ -1168,6 +1280,63 @@ carregarVendas();
     </div>
   </div>
 </div>
+</div>
+
+
+<!-- ══ LOGIN SCREEN ══ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-header">
+      <h2>KL <span style="color:var(--cyan)">MARKET</span></h2>
+      <p>Controle de Vendas — Acesso Seguro</p>
+    </div>
+    <div class="login-body">
+      <div class="login-tabs">
+        <div class="login-tab active" onclick="switchLoginTab('login')" id="lt-login">Entrar</div>
+        <div class="login-tab" onclick="switchLoginTab('cadastro')" id="lt-cadastro">Criar Conta</div>
+      </div>
+
+      <!-- LOGIN -->
+      <div id="lf-login">
+        <div class="login-error" id="login-error"></div>
+        <div class="login-field">
+          <label>E-mail</label>
+          <input type="email" id="login-email" placeholder="seu@email.com">
+        </div>
+        <div class="login-field">
+          <label>Senha</label>
+          <input type="password" id="login-senha" placeholder="••••••••" onkeydown="if(event.key==='Enter')fazerLogin()">
+        </div>
+        <button class="btn-login" id="btn-login" onclick="fazerLogin()">Entrar</button>
+        <div class="login-divider" style="margin-top:16px">
+          <span style="cursor:pointer;color:var(--blue);font-size:12px" onclick="esqueceuSenha()">Esqueci minha senha</span>
+        </div>
+      </div>
+
+      <!-- CADASTRO -->
+      <div id="lf-cadastro" style="display:none">
+        <div class="login-error" id="cadastro-error"></div>
+        <div class="login-success" id="cadastro-success"></div>
+        <div class="login-field">
+          <label>Nome Completo</label>
+          <input type="text" id="cadastro-nome" placeholder="Seu nome">
+        </div>
+        <div class="login-field">
+          <label>E-mail</label>
+          <input type="email" id="cadastro-email" placeholder="seu@email.com">
+        </div>
+        <div class="login-field">
+          <label>Senha (mínimo 6 caracteres)</label>
+          <input type="password" id="cadastro-senha" placeholder="••••••••">
+        </div>
+        <div class="login-field">
+          <label>Confirmar Senha</label>
+          <input type="password" id="cadastro-senha2" placeholder="••••••••" onkeydown="if(event.key==='Enter')fazerCadastro()">
+        </div>
+        <button class="btn-login" id="btn-cadastro" onclick="fazerCadastro()">Criar Conta</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 </body>
