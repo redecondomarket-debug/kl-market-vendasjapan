@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KL Market — Controle de Vendas</title>
+<title>Revendedores Japan — Controle de Vendas</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
@@ -152,7 +152,7 @@ tbody td{padding:9px 11px;vertical-align:middle;white-space:nowrap;}
 <body>
 
 <div id="app-content" style="display:none"><div class="app-header" style="position:relative">
-  <h1>KL <span>MARKET</span> — Controle de Vendas</h1>
+  <h1>Revendedores <span>Japan</span> — Controle de Vendas</h1>
   <div style="display:flex;gap:10px;align-items:center">
     <button class="btn btn-export" style="padding:7px 14px;font-size:12px" onclick="verificarPrazos()">🔔 Prazos</button>
     <span id="total-registros" style="font-size:12px;color:var(--muted)">0 pedidos</span>
@@ -518,7 +518,7 @@ async function fazerCadastro(){
 async function fazerLogout(){
   await sb.auth.signOut();
   currentUser=null;currentToken=null;vendas=[];
-  document.getElementById('login-screen').classList.remove('hidden');
+  document.getElementById('login-screen').style.display='flex';
   document.getElementById('app-content').style.display='none';
   document.getElementById('user-display').textContent='';
   document.getElementById('login-email').value='';
@@ -539,7 +539,7 @@ async function iniciarSessao(user, token){
   currentToken = token;
   const nome = user.user_metadata?.nome || user.email.split('@')[0];
   document.getElementById('user-display').textContent = '👤 '+nome;
-  document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('login-screen').style.display='none';
   document.getElementById('app-content').style.display='block';
   await carregarVendas();
 }
@@ -1187,7 +1187,7 @@ populateProdutos();
 // Listen for auth changes
 sb.auth.onAuthStateChange((event, session)=>{
   if(event==='SIGNED_OUT'){
-    document.getElementById('login-screen').classList.remove('hidden');
+    document.getElementById('login-screen').style.display='flex';
     document.getElementById('app-content').style.display='none';
   }
 });
@@ -1291,7 +1291,7 @@ sb.auth.onAuthStateChange((event, session)=>{
 <div id="login-screen">
   <div class="login-card">
     <div class="login-header">
-      <h2>KL <span style="color:var(--cyan)">MARKET</span></h2>
+      <h2>Revendedores <span style="color:var(--cyan)">Japan</span></h2>
       <p>Controle de Vendas — Acesso Seguro</p>
     </div>
     <div class="login-body">
