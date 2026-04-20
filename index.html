@@ -6,6 +6,7 @@
 <title>KL Market — Controle de Vendas</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
 <style>
 :root {
   --navy:#0d1b4b;--navy2:#162d6e;--blue:#1a6bc4;--cyan:#00b4d8;
@@ -59,7 +60,7 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 /* TABLE */
 .table-wrap{padding:0 32px 32px;overflow-x:auto;}
 table{width:100%;border-collapse:collapse;font-size:12px;min-width:2000px;}
-thead tr{background:var(--navy);position:sticky;top:114px;}
+thead tr{background:var(--navy);position:sticky;top:106px;}
 thead th{padding:10px 11px;text-align:left;font-family:var(--font-head);font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);white-space:nowrap;cursor:pointer;user-select:none;border-bottom:1px solid var(--border);}
 thead th:hover{color:var(--cyan);}
 tbody tr{border-bottom:1px solid var(--border);transition:background .15s;}
@@ -161,6 +162,7 @@ tbody td{padding:9px 11px;vertical-align:middle;white-space:nowrap;}
 <div class="tabs">
   <div class="tab active" onclick="switchTab('vendas')">📋 Pedidos</div>
   <div class="tab" onclick="switchTab('dashboard')">📊 Dashboard</div>
+  <div class="tab" onclick="switchTab('calculadora')">🧮 Calculadora</div>
 </div>
 
 <!-- ══ ABA PEDIDOS ══ -->
@@ -486,14 +488,15 @@ function showError(msg){const el=document.getElementById('error-msg');if(el){el.
 
 // ══ TABS ══
 function switchTab(t){
-  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',['vendas','dashboard'][i]===t));
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',['vendas','dashboard','calculadora'][i]===t));
   document.getElementById('tab-vendas').classList.toggle('active',t==='vendas');
   document.getElementById('tab-dashboard').classList.toggle('active',t==='dashboard');
+  document.getElementById('tab-calculadora').classList.toggle('active',t==='calculadora');
   if(t==='dashboard')renderDashboard();
 }
 
 // ══ PRODUTOS ══
-const produtos=["✏️ DIGITAR MANUALMENTE","--- ABADÁS ---","Abadá Personalizado","--- ADESIVOS ---","Adesivo Digital – Formato Personalizado Impressão Digital 4x0 Ultra-HD","Adesivo Digital Recorte Personalizado – Impressão Digital 4x0 Ultra-HD Espessura 0,80","Adesivo UV","Adesivo UV Recorte Personalizado – Formato Personalizado Impressão UV 4x0 Ultra-HD 0,80 Micras","Rótulo BOPP – Largura até 45cm 4 Cores BOPP 120g Corte Retangular / Cartela","--- BACKDROP ---","Backdrop Dupla-Face Completo 2000x1000mm","Backdrop Dupla-Face Completo 2000x1400mm","Backdrop Dupla-Face Completo 2000x2000mm","Backdrop Dupla-Face Completo 3000x2000mm","Backdrop Dupla-Face Completo 4000x2000mm","Backdrop Dupla-Face Estrutura 2000x1000mm","Backdrop Dupla-Face Estrutura 2000x2000mm","Backdrop Dupla-Face Estrutura 3000x2000mm","Backdrop Dupla-Face Estrutura 4000x2000mm","Backdrop Tecido Dupla-Face 2000x1000mm","Backdrop Tecido Dupla-Face 2000x2000mm","Backdrop Tecido Dupla-Face 3000x2000mm","Backdrop Tecido Dupla-Face 4000x2000mm","Backdrop Tecido Face Única Tamanho Personalizado","Backdrop Tecido Face Única 2000x2000mm","Backdrop Tecido Face Única 3000x2900mm","Backdrop Tecido Face Única 4000x2000mm","--- BANDEIRAS ---","Bandeira do Brasil – 1,40M x 1,0M","Bandeira Dupla-Face Personalizada","Bandeira Face Única Personalizada HD","--- BANNER / FAIXA ---","Banner/Faixa Personalizado – Lona 340gr (por m²)","Banner/Faixa 70cm","Banner/Faixa 1,0m","Banner/Faixa 1,40m","Eco Banner","Eco Faixa","--- BASE WIND BANNER ---","Base Wind Banner P/M","Base Wind Banner G/GG","Base para Wind Banner Fibra","Base Guarda Sol e Ombrelone","--- BRINDES ---","Balde de Gelo Cristal","Caneca Cerâmica","Copo Quencher","Copo Térmico","Copo Térmico com Caixa de Som","Garrafa Inox 500ml","Garrafa Térmica com Temperatura","Garrafinha Infantil","--- CAMA | MESA | BANHO ---","Cama | Mesa | Banho Personalizado","Fronha Personalizada","Refil Almofada","Refil Travesseiro","Toalha de Banho Personalizada","Toalha de Rosto Personalizada","Toalha de Mesa Personalizada","--- CAPA ---","Capa Almofada Personalizada","Capa de Antena Personalizada","Capa de Gradil 2000x950mm","Capa de Gradil 2000x1250mm","Capa de Gradil 3000x950mm","Capa de Gradil 3000x1250mm","Capa para Malas P","Capa para Malas M","Capa para Malas G","Capa Porta Decorativa","--- CAMISETAS FEMININAS ---","Camiseta Dry Fit Feminina","Camiseta Helanca Feminina","Camiseta Polo Feminina","Camiseta Térmica Feminina","Camiseta UV50+ Feminina","--- CAMISETAS INFANTIS ---","Camiseta Dry Fit Infantil Feminina","Camiseta Dry Fit Infantil Masculina","Camiseta Helanca Plus Feminina Infantil","Camiseta Helanca Infantil Masculina","Camiseta Térmica Infantil Feminina","Camiseta Térmica Infantil Masculina","Camiseta UV50+ Feminina Infantil","Camiseta UV50+ Infantil Masculina","--- CAMISETAS MASCULINAS ---","Camiseta Dry Fit Masculina","Camiseta Helanca Masculina","Camiseta Polo Masculina","Camiseta Térmica Masculina","Camiseta UV50+ Masculina","Camiseta UV50+ Manga Longa Masculina","Camiseta Térmica Manga Longa Masculina","Camiseta Helanca Manga Longa Masculina","Camiseta Terceirão","--- CAMISETAS OUTRAS ---","Camiseta Algodão","Camiseta Polo Piquet","Regata Personalizada","--- CALÇÃO / BERMUDA ---","Bermuda Personalizada","Calção Futebol Premium","--- CORTA VENTO ---","Corta Vento Aeroblade PP","Corta Vento Aeroblade P","Corta Vento Aeroblade M","Corta Vento Aeroblade G","Corta Vento Aeroblade GG","Corta Vento Aeroblade XG","--- DTF / TRANSFER ---","Cartela DTF UV","DTF Têxtil","DTF-UV Tamanho A3","DTF-UV Tamanho A2","DTF-UV Tamanho A1","Transfer Têxtil","--- ECO ---","Eco Bag Personalizada","--- FARDAMENTO ---","Fardamento Futebol Personalizado","Kit Festa Personalizado","--- HASTES ---","Hastes para Wind Banner","Hastes Fibra Wind Banner","Tripé para Banner","--- LONA ---","Lona 340gr Impressão Digital (por m²)","Placa PS | Poliestireno","--- PERFURADO ---","Perfurado Digital Personalizado","Perfurado UV Personalizado","--- ROLL-UP ---","Roll-Up Completo Tecido – 2,0m x 0,80m","Roll-Up Completo Lona – 2,0m x 0,80m","Roll-Up Expositor","--- SACOLAS / BAGS ---","Gym Bag Personalizada","Sacolinhas Surpresa","--- TECIDOS ---","Tecido para Festas Personalizado","Tecido Sublimado (por metro linear)","--- WIND BANNER ---","Mini Wind Banner","Wind Banner Completo P – 1,85m x 0,65m","Wind Banner Completo M – 2,45m x 0,65m","Wind Banner Completo G – 2,90m x 0,65m","Wind Banner Completo GG – 3,45m x 0,65m","Wind Banner Fibra M – 2,50m x 0,65m","Wind Banner Fibra G – 3,0m x 0,65m","Wind Banner Full Parede P","Wind Banner Full Parede M","Wind Banner Full Parede GG","Wind Banner Parede P","Wind Banner Parede M","Wind Banner Parede G Full","Wind Banner Parede GG","Wind Banner Promocional","Wind Banners Tecido","Wind Banner Tecido p/ Fibra","--- ARTE E CRIAÇÃO ---","Criação de Arte / Design Gráfico","Revisão / Ajuste de Arte"];
+const produtos=["✏️ DIGITAR MANUALMENTE","--- ABADÁS ---","Abadá Personalizado","--- ADESIVOS ---","Adesivo Digital – Formato Personalizado Impressão Digital 4x0 Ultra-HD","Adesivo Digital Recorte Personalizado – Impressão Digital 4x0 Ultra-HD Espessura 0,80","Adesivo UV","Adesivo UV Recorte Personalizado – Formato Personalizado Impressão UV 4x0 Ultra-HD 0,80 Micras","Rótulo BOPP – Largura até 45cm 4 Cores BOPP 120g Corte Retangular / Cartela","--- BACKDROP ---","Backdrop Dupla-Face Completo 2000x1000mm – 2M x 1M 4x4 Cores Oxford HD Tubos Alumínio","Backdrop Dupla-Face Completo 2000x1400mm – 2M x 1,40M 4x4 Cores Oxford HD Dupla-Face","Backdrop Dupla-Face Completo 2000x2000mm","Backdrop Dupla-Face Completo 3000x2000mm","Backdrop Dupla-Face Completo 4000x2000mm","Backdrop Dupla-Face Estrutura 2000x1000mm","Backdrop Dupla-Face Estrutura 2000x2000mm","Backdrop Dupla-Face Estrutura 3000x2000mm","Backdrop Dupla-Face Estrutura 4000x2000mm","Backdrop Tecido Dupla-Face 2000x1000mm","Backdrop Tecido Dupla-Face 2000x2000mm","Backdrop Tecido Dupla-Face 3000x2000mm","Backdrop Tecido Dupla-Face 4000x2000mm","Backdrop Tecido Face Única Tamanho Personalizado","Backdrop Tecido Face Única 2000x2000mm","Backdrop Tecido Face Única 3000x2900mm","Backdrop Tecido Face Única 4000x2000mm","--- BANDEIRAS ---","Bandeira do Brasil – 1,40M x 1,0M","Bandeira Dupla-Face Personalizada","Bandeira Face Única Personalizada HD","--- BANNER / FAIXA ---","Banner/Faixa Personalizado – Lona 340gr (por m²)","Banner/Faixa 70cm","Banner/Faixa 1,0m","Banner/Faixa 1,40m","Eco Banner","Eco Faixa","--- BASE WIND BANNER ---","Base Wind Banner P/M","Base Wind Banner G/GG","Base para Wind Banner Fibra","Base Guarda Sol e Ombrelone","--- BRINDES ---","Balde de Gelo Cristal","Caneca Cerâmica","Copo Quencher","Copo Térmico","Copo Térmico com Caixa de Som","Garrafa Inox 500ml","Garrafa Térmica com Temperatura","Garrafinha Infantil","--- CAMA | MESA | BANHO ---","Cama | Mesa | Banho Personalizado","Fronha Personalizada","Refil Almofada","Refil Travesseiro","Toalha de Banho Personalizada","Toalha de Rosto Personalizada","Toalha de Mesa Personalizada","--- CAPA ---","Capa Almofada Personalizada","Capa de Antena Personalizada","Capa de Gradil 2000x950mm","Capa de Gradil 2000x1250mm","Capa de Gradil 3000x950mm","Capa de Gradil 3000x1250mm","Capa para Malas P","Capa para Malas M","Capa para Malas G","Capa Porta Decorativa","--- CAMISETAS FEMININAS ---","Camiseta Dry Fit Feminina","Camiseta Helanca Feminina","Camiseta Polo Feminina","Camiseta Térmica Feminina","Camiseta UV50+ Feminina","--- CAMISETAS INFANTIS ---","Camiseta Dry Fit Infantil Feminina","Camiseta Dry Fit Infantil Masculina","Camiseta Helanca Plus Feminina Infantil","Camiseta Helanca Infantil Masculina","Camiseta Térmica Infantil Feminina","Camiseta Térmica Infantil Masculina","Camiseta UV50+ Feminina Infantil","Camiseta UV50+ Infantil Masculina","--- CAMISETAS MASCULINAS ---","Camiseta Dry Fit Masculina","Camiseta Helanca Masculina","Camiseta Polo Masculina","Camiseta Térmica Masculina","Camiseta UV50+ Masculina","Camiseta UV50+ Manga Longa Masculina","Camiseta Térmica Manga Longa Masculina","Camiseta Helanca Manga Longa Masculina","Camiseta Terceirão","--- CAMISETAS OUTRAS ---","Camiseta Algodão","Camiseta Polo Piquet","Regata Personalizada","--- CALÇÃO / BERMUDA ---","Bermuda Personalizada","Calção Futebol Premium","--- CORTA VENTO ---","Corta Vento Aeroblade PP","Corta Vento Aeroblade P","Corta Vento Aeroblade M","Corta Vento Aeroblade G","Corta Vento Aeroblade GG","Corta Vento Aeroblade XG","--- DTF / TRANSFER ---","Cartela DTF UV","DTF Têxtil","DTF-UV Tamanho A3","DTF-UV Tamanho A2","DTF-UV Tamanho A1","Transfer Têxtil","--- ECO ---","Eco Bag Personalizada","--- FARDAMENTO ---","Fardamento Futebol Personalizado","Kit Festa Personalizado","--- HASTES ---","Hastes para Wind Banner","Hastes Fibra Wind Banner","Tripé para Banner","--- LONA ---","Lona 340gr Impressão Digital (por m²)","Placa PS | Poliestireno","--- PERFURADO ---","Perfurado Digital Personalizado","Perfurado UV Personalizado","--- ROLL-UP ---","Roll-Up Completo Tecido – 2,0m x 0,80m","Roll-Up Completo Lona – 2,0m x 0,80m","Roll-Up Expositor","--- SACOLAS / BAGS ---","Gym Bag Personalizada","Sacolinhas Surpresa","--- TECIDOS ---","Tecido para Festas Personalizado","Tecido Sublimado (por metro linear)","--- WIND BANNER ---","Mini Wind Banner","Wind Banner Completo P – 1,85m x 0,65m","Wind Banner Completo M – 2,45m x 0,65m","Wind Banner Completo G – 2,90m x 0,65m","Wind Banner Completo GG – 3,45m x 0,65m","Wind Banner Fibra M – 2,50m x 0,65m","Wind Banner Fibra G – 3,0m x 0,65m","Wind Banner Full Parede P","Wind Banner Full Parede M","Wind Banner Full Parede GG","Wind Banner Parede P","Wind Banner Parede M","Wind Banner Parede G Full","Wind Banner Parede GG","Wind Banner Promocional","Wind Banners Tecido","Wind Banner Tecido p/ Fibra","--- ARTE E CRIAÇÃO ---","Criação de Arte / Design Gráfico","Revisão / Ajuste de Arte"];
 
 function populateProdutos(){
   const sel=document.getElementById('f-produto-select');if(!sel)return;
@@ -526,15 +529,14 @@ function calcLucro(){
   const freteReal=parseFloat(document.getElementById('f-frete-real').value)||0;
   const freteCobrado=parseFloat(document.getElementById('f-frete-cobrado').value)||0;
 
-  const totalVenda=venda*qty;
-  const totalCusto=custo*qty;
+  // Valores já são totais — NÃO multiplica por qty
+  const totalVenda=venda;
+  const totalCusto=custo;
   const valorImp=totalVenda*(imp/100);
   const valorTaxa=totalVenda*(taxa/100);
-  const diferencaFrete=freteCobrado-freteReal; // positivo = lucra no frete
+  const diferencaFrete=freteCobrado-freteReal;
 
-  // Margem Bruta = Venda - Custo (sem impostos/taxas/extras)
   const margemBruta=totalVenda-totalCusto;
-  // Lucro Líquido = Margem Bruta - Impostos - Taxa - Despesa Designer + Diferença Frete
   const lucroLiq=margemBruta-valorImp-valorTaxa-despDesigner+diferencaFrete;
   const margemLiq=totalVenda>0?(lucroLiq/totalVenda*100):0;
 
@@ -551,13 +553,12 @@ function calcLucro(){
 }
 
 function calcLucroData(v){
-  const qty=v.quantidade||1,venda=v.precoVenda||0,custo=v.precoCusto||0;
+  const venda=v.precoVenda||0,custo=v.precoCusto||0;
   const imp=v.imposto||0,taxa=v.taxa||0;
   const despDesigner=v.despesaDesigner||0,freteReal=v.freteReal||0,freteCobrado=v.freteCobrado||0;
-  const totalVenda=venda*qty,totalCusto=custo*qty;
-  const margemBruta=totalVenda-totalCusto;
-  const lucro=margemBruta-totalVenda*(imp/100)-totalVenda*(taxa/100)-despDesigner+(freteCobrado-freteReal);
-  const margemLiquida=totalVenda>0?(lucro/totalVenda*100):0;
+  const margemBruta=venda-custo;
+  const lucro=margemBruta-venda*(imp/100)-venda*(taxa/100)-despDesigner+(freteCobrado-freteReal);
+  const margemLiquida=venda>0?(lucro/venda*100):0;
   return{lucro,margemBruta,margemLiquida};
 }
 
@@ -903,6 +904,7 @@ function dispararNotificacao(){
 
 // ══ DASHBOARD ══
 let charts={};
+if(typeof ChartDataLabels!=="undefined")Chart.register(ChartDataLabels);
 function destroyChart(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
 const COLORS=['#00b4d8','#00c896','#e91e8c','#f5a623','#a855f7','#ff4757','#ffd32a','#1a6bc4','#06b6d4','#10b981'];
 
@@ -951,7 +953,7 @@ function renderDashboard(){
   const dias=Object.keys(byDay).sort((a,b)=>a.localeCompare(b));
   destroyChart('fatLucro');
   const c1=document.getElementById('chart-fatLucro');
-  if(c1){charts.fatLucro=new Chart(c1,{type:'bar',data:{labels:dias,datasets:[{label:'Faturamento',data:dias.map(d=>byDay[d].fat),backgroundColor:'rgba(0,180,216,0.7)',borderColor:'#00b4d8',borderWidth:1},{label:'Lucro',data:dias.map(d=>byDay[d].lucro),backgroundColor:'rgba(0,200,150,0.7)',borderColor:'#00c896',borderWidth:1}]},options:{...chartOpts,plugins:{...chartOpts.plugins,legend:{...chartOpts.plugins.legend,display:true}}}});}
+  if(c1){charts.fatLucro=new Chart(c1,{type:'bar',data:{labels:dias,datasets:[{label:'Faturamento',data:dias.map(d=>byDay[d].fat),backgroundColor:'rgba(0,180,216,0.7)',borderColor:'#00b4d8',borderWidth:1},{label:'Lucro',data:dias.map(d=>byDay[d].lucro),backgroundColor:'rgba(0,200,150,0.7)',borderColor:'#00c896',borderWidth:1}]},options:{...chartOpts,plugins:{...chartOpts.plugins,legend:{display:true,labels:{color:'#e8eaf6',font:{family:'DM Sans',size:11}}},datalabels:{color:'#fff',anchor:'end',align:'top',font:{weight:'bold',size:10},formatter:(v)=>v>0?'R$'+v.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,'.'):''}}}});}
 
   // 2. Top 6 produtos
   const byProd={};
@@ -959,13 +961,13 @@ function renderDashboard(){
   const top6=Object.entries(byProd).sort((a,b)=>b[1]-a[1]).slice(0,6);
   destroyChart('produtos');
   const c2=document.getElementById('chart-produtos');
-  if(c2)charts.produtos=new Chart(c2,{type:'doughnut',data:{labels:top6.map(e=>e[0]),datasets:[{data:top6.map(e=>e[1]),backgroundColor:COLORS,borderWidth:2,borderColor:'#161f35'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#e8eaf6',font:{family:'DM Sans',size:10},padding:8}},tooltip:{backgroundColor:'#1e2a45',titleColor:'#e8eaf6',bodyColor:'#7986ab'}}}});
+  if(c2)charts.produtos=new Chart(c2,{type:'doughnut',data:{labels:top6.map(e=>e[0]),datasets:[{data:top6.map(e=>e[1]),backgroundColor:COLORS,borderWidth:2,borderColor:'#161f35'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#e8eaf6',font:{family:'DM Sans',size:10},padding:8}},tooltip:{backgroundColor:'#1e2a45',titleColor:'#e8eaf6',bodyColor:'#7986ab'},datalabels:{color:'#fff',font:{weight:'bold',size:11},formatter:(v,ctx)=>{const total=ctx.dataset.data.reduce((a,b)=>a+b,0);return total>0?((v/total)*100).toFixed(1)+'%':'';}}}}});
 
   // 3. Pagamento
   const byPag={};data.forEach(v=>{if(v.pagamento)byPag[v.pagamento]=(byPag[v.pagamento]||0)+1;});
   destroyChart('pagamento');
   const c3=document.getElementById('chart-pagamento');
-  if(c3)charts.pagamento=new Chart(c3,{type:'pie',data:{labels:Object.keys(byPag),datasets:[{data:Object.values(byPag),backgroundColor:COLORS,borderWidth:2,borderColor:'#161f35'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#e8eaf6',font:{family:'DM Sans',size:10},padding:8}},tooltip:{backgroundColor:'#1e2a45'}}}});
+  if(c3)charts.pagamento=new Chart(c3,{type:'pie',data:{labels:Object.keys(byPag),datasets:[{data:Object.values(byPag),backgroundColor:COLORS,borderWidth:2,borderColor:'#161f35'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#e8eaf6',font:{family:'DM Sans',size:10},padding:8}},tooltip:{backgroundColor:'#1e2a45',titleColor:'#e8eaf6',bodyColor:'#7986ab'},datalabels:{color:'#fff',font:{weight:'bold',size:11},formatter:(v,ctx)=>{const total=ctx.dataset.data.reduce((a,b)=>a+b,0);return total>0?((v/total)*100).toFixed(1)+'%':'';}}}}});
 
   // 4. Designer qtd
   const byDesQtd={};data.forEach(v=>{if(v.designer)byDesQtd[v.designer]=(byDesQtd[v.designer]||0)+1;});
@@ -986,13 +988,87 @@ function renderDashboard(){
   const stColors={'Pendente':'#ffd32a','Em Produção':'#00b4d8','Pronto':'#00c896','Entregue':'#6eb3f7','Cancelado':'#ff4757'};
   destroyChart('status');
   const c6=document.getElementById('chart-status');
-  if(c6)charts.status=new Chart(c6,{type:'doughnut',data:{labels:Object.keys(bySt),datasets:[{data:Object.values(bySt),backgroundColor:Object.keys(bySt).map(s=>stColors[s]||'#7986ab'),borderWidth:2,borderColor:'#161f35'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#e8eaf6',font:{family:'DM Sans',size:10},padding:8}},tooltip:{backgroundColor:'#1e2a45'}}}});
+  if(c6)charts.status=new Chart(c6,{type:'doughnut',data:{labels:Object.keys(bySt),datasets:[{data:Object.values(bySt),backgroundColor:Object.keys(bySt).map(s=>stColors[s]||'#7986ab'),borderWidth:2,borderColor:'#161f35'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#e8eaf6',font:{family:'DM Sans',size:10},padding:8}},tooltip:{backgroundColor:'#1e2a45',titleColor:'#e8eaf6',bodyColor:'#7986ab'},datalabels:{color:'#fff',font:{weight:'bold',size:11},formatter:(v,ctx)=>{const total=ctx.dataset.data.reduce((a,b)=>a+b,0);return total>0?((v/total)*100).toFixed(1)+'%':'';}}}}});
 
   // 7. Envio
   const byEnv={};data.forEach(v=>{if(v.envio)byEnv[v.envio]=(byEnv[v.envio]||0)+1;});
   destroyChart('envio');
   const c7=document.getElementById('chart-envio');
-  if(c7)charts.envio=new Chart(c7,{type:'pie',data:{labels:Object.keys(byEnv),datasets:[{data:Object.values(byEnv),backgroundColor:COLORS,borderWidth:2,borderColor:'#161f35'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#e8eaf6',font:{family:'DM Sans',size:10},padding:8}},tooltip:{backgroundColor:'#1e2a45'}}}});
+  if(c7)charts.envio=new Chart(c7,{type:'pie',data:{labels:Object.keys(byEnv),datasets:[{data:Object.values(byEnv),backgroundColor:COLORS,borderWidth:2,borderColor:'#161f35'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#e8eaf6',font:{family:'DM Sans',size:10},padding:8}},tooltip:{backgroundColor:'#1e2a45',titleColor:'#e8eaf6',bodyColor:'#7986ab'},datalabels:{color:'#fff',font:{weight:'bold',size:11},formatter:(v,ctx)=>{const total=ctx.dataset.data.reduce((a,b)=>a+b,0);return total>0?((v/total)*100).toFixed(1)+'%':'';}}}}});
+}
+
+
+// ══ CALCULADORA ══
+function calcCalc(){
+  const custo=parseFloat(document.getElementById('calc-custo').value)||0;
+  const designer=parseFloat(document.getElementById('calc-designer').value)||0;
+  const freteReal=parseFloat(document.getElementById('calc-frete-real').value)||0;
+  const freteCobrado=parseFloat(document.getElementById('calc-frete-cobrado').value)||0;
+  const imp=parseFloat(document.getElementById('calc-imposto').value)||0;
+  const taxa=parseFloat(document.getElementById('calc-taxa').value)||0;
+  const margemDes=parseFloat(document.getElementById('calc-margem-desejada').value);
+  const lucroDes=parseFloat(document.getElementById('calc-lucro-desejado').value);
+  const vendaManual=parseFloat(document.getElementById('calc-venda').value);
+
+  // Custos fixos (não dependem do preço de venda)
+  const custoFixo=custo+designer+freteReal;
+  const diferencaFrete=freteCobrado-freteReal;
+
+  let precoIdeal=null,lucroFinal=null,margemFinal=null;
+
+  if(!isNaN(margemDes)&&margemDes>0){
+    // Margem = (Venda - Custo - Imp*Venda - Taxa*Venda - Designer + DifFrete) / Venda
+    // Venda*(1 - imp/100 - taxa/100 - margem/100) = Custo + Designer - DifFrete
+    // Venda = (Custo + Designer - DifFrete) / (1 - imp/100 - taxa/100 - margem/100)
+    const divisor=1-(imp/100)-(taxa/100)-(margemDes/100);
+    if(divisor>0){
+      precoIdeal=(custo+designer-diferencaFrete)/divisor;
+      // Atualiza campo de venda sem disparar evento
+      document.getElementById('calc-venda').value=precoIdeal.toFixed(2);
+    }
+  } else if(!isNaN(lucroDes)&&lucroDes>0){
+    // Lucro = Venda - Custo - Imp*Venda - Taxa*Venda - Designer + DifFrete = lucroDes
+    // Venda*(1-imp/100-taxa/100) = lucroDes + Custo + Designer - DifFrete
+    const divisor=1-(imp/100)-(taxa/100);
+    if(divisor>0){
+      precoIdeal=(lucroDes+custo+designer-diferencaFrete)/divisor;
+      document.getElementById('calc-venda').value=precoIdeal.toFixed(2);
+    }
+  }
+
+  const venda=parseFloat(document.getElementById('calc-venda').value)||0;
+  if(venda>0){
+    const valorImp=venda*(imp/100);
+    const valorTaxa=venda*(taxa/100);
+    const margemBruta=venda-custo;
+    lucroFinal=margemBruta-valorImp-valorTaxa-designer+diferencaFrete;
+    margemFinal=venda>0?(lucroFinal/venda*100):0;
+
+    const fmt2=v=>'R$ '+v.toFixed(2).replace('.',',');
+    const color=v=>v>=0?'var(--green)':'var(--red)';
+
+    document.getElementById('calc-r-custo').textContent=fmt2(custoFixo);
+    document.getElementById('calc-r-preco').textContent=fmt2(venda);
+    document.getElementById('calc-r-bruta').textContent=fmt2(margemBruta);
+    document.getElementById('calc-r-bruta').style.color=color(margemBruta);
+    document.getElementById('calc-r-lucro').textContent=fmt2(lucroFinal);
+    document.getElementById('calc-r-lucro').style.color=color(lucroFinal);
+    document.getElementById('calc-r-margem').textContent=margemFinal.toFixed(1)+'%';
+    document.getElementById('calc-r-margem').style.color=color(margemFinal);
+    document.getElementById('calc-r-frete').textContent=fmt2(diferencaFrete);
+    document.getElementById('calc-r-frete').style.color=color(diferencaFrete);
+
+    document.getElementById('calc-breakdown').innerHTML=`
+      <strong style="color:var(--text)">📋 Detalhamento:</strong><br>
+      Preço de Venda: <strong style="color:var(--cyan)">${fmt2(venda)}</strong> &nbsp;|&nbsp;
+      Custo Produto: <strong style="color:var(--red)">-${fmt2(custo)}</strong> &nbsp;|&nbsp;
+      Imposto (${imp}%): <strong style="color:var(--red)">-${fmt2(valorImp)}</strong><br>
+      Taxa Cartão (${taxa}%): <strong style="color:var(--red)">-${fmt2(valorTaxa)}</strong> &nbsp;|&nbsp;
+      Desp. Designer: <strong style="color:var(--red)">-${fmt2(designer)}</strong> &nbsp;|&nbsp;
+      Lucro no Frete: <strong style="color:${color(diferencaFrete)}">${diferencaFrete>=0?'+':''}${fmt2(diferencaFrete)}</strong><br>
+      <strong>= Lucro Líquido: <span style="color:${color(lucroFinal)}">${fmt2(lucroFinal)}</span> &nbsp;(${margemFinal.toFixed(1)}% de margem)</strong>
+    `;
+  }
 }
 
 document.getElementById('modal-overlay').addEventListener('click',function(e){if(e.target===this)fecharModal();});
@@ -1001,5 +1077,98 @@ document.getElementById('modal-overlay').addEventListener('click',function(e){if
 populateProdutos();
 carregarVendas();
 </script>
+
+<!-- ══ ABA CALCULADORA ══ -->
+<div id="tab-calculadora" class="tab-content">
+<div style="max-width:700px;margin:32px auto;padding:0 32px 64px;">
+  <h2 style="font-family:var(--font-head);font-size:22px;font-weight:800;color:#fff;margin-bottom:6px;">🧮 Calculadora de Preço</h2>
+  <p style="font-size:13px;color:var(--muted);margin-bottom:28px;">Descubra o preço ideal ou calcule seu lucro real antes de fechar o pedido.</p>
+
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;">
+    <div style="background:linear-gradient(135deg,var(--navy),var(--navy2));padding:18px 24px;border-bottom:1px solid var(--border);">
+      <span style="font-family:var(--font-head);font-size:13px;font-weight:700;color:rgba(255,255,255,0.8);letter-spacing:1px;text-transform:uppercase;">📥 Entradas</span>
+    </div>
+    <div style="padding:24px;display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div class="form-group">
+        <label>💰 Custo Total do Produto (R$)</label>
+        <input type="number" id="calc-custo" placeholder="0,00" step="0.01" oninput="calcCalc()">
+      </div>
+      <div class="form-group">
+        <label>💸 Despesa com Designer (R$)</label>
+        <input type="number" id="calc-designer" placeholder="0,00" step="0.01" oninput="calcCalc()">
+      </div>
+      <div class="form-group">
+        <label>🚚 Frete Real (R$)</label>
+        <input type="number" id="calc-frete-real" placeholder="0,00" step="0.01" oninput="calcCalc()">
+      </div>
+      <div class="form-group">
+        <label>📦 Frete Cobrado do Cliente (R$)</label>
+        <input type="number" id="calc-frete-cobrado" placeholder="0,00" step="0.01" oninput="calcCalc()">
+      </div>
+      <div class="form-group">
+        <label>🏛 Imposto (%)</label>
+        <input type="number" id="calc-imposto" value="4" step="0.1" oninput="calcCalc()">
+      </div>
+      <div class="form-group">
+        <label>💳 Taxa Máquina Cartão (%)</label>
+        <input type="number" id="calc-taxa" value="0" step="0.1" oninput="calcCalc()">
+      </div>
+    </div>
+
+    <div style="background:rgba(0,180,216,0.05);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:18px 24px;">
+      <span style="font-family:var(--font-head);font-size:13px;font-weight:700;color:var(--cyan);letter-spacing:1px;text-transform:uppercase;">🎯 O Que Você Quer?</span>
+    </div>
+    <div style="padding:24px;display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div class="form-group">
+        <label>📊 Margem de Lucro Desejada (%)</label>
+        <input type="number" id="calc-margem-desejada" placeholder="Ex: 30" step="0.1" oninput="calcCalc()">
+        <span style="font-size:11px;color:var(--muted);margin-top:3px;">→ Calcula o preço ideal automaticamente</span>
+      </div>
+      <div class="form-group">
+        <label>💵 Lucro Desejado em R$</label>
+        <input type="number" id="calc-lucro-desejado" placeholder="Ex: 100,00" step="0.01" oninput="calcCalc()">
+        <span style="font-size:11px;color:var(--muted);margin-top:3px;">→ Também calcula o preço ideal</span>
+      </div>
+      <div class="form-group">
+        <label>🏷 Ou informe o Preço de Venda (R$)</label>
+        <input type="number" id="calc-venda" placeholder="0,00" step="0.01" oninput="calcCalc()">
+        <span style="font-size:11px;color:var(--muted);margin-top:3px;">→ Calcula lucro e margem reais</span>
+      </div>
+    </div>
+
+    <div style="background:linear-gradient(135deg,rgba(0,200,150,0.08),rgba(0,180,216,0.08));border-top:1px solid var(--border);padding:24px;">
+      <span style="font-family:var(--font-head);font-size:13px;font-weight:700;color:var(--green);letter-spacing:1px;text-transform:uppercase;">📊 Resultado</span>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px;" id="calc-resultado">
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;text-align:center;">
+          <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Custo Total</div>
+          <div style="font-family:var(--font-head);font-size:20px;font-weight:800;color:var(--text);" id="calc-r-custo">R$ —</div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;text-align:center;border-color:rgba(0,180,216,0.3);">
+          <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">💡 Preço Ideal de Venda</div>
+          <div style="font-family:var(--font-head);font-size:20px;font-weight:800;color:var(--cyan);" id="calc-r-preco">R$ —</div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;text-align:center;">
+          <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Margem Bruta</div>
+          <div style="font-family:var(--font-head);font-size:20px;font-weight:800;" id="calc-r-bruta">—</div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid rgba(0,200,150,0.3);border-radius:10px;padding:14px 16px;text-align:center;">
+          <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">💰 Lucro Líquido</div>
+          <div style="font-family:var(--font-head);font-size:22px;font-weight:800;" id="calc-r-lucro">R$ —</div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid rgba(0,200,150,0.3);border-radius:10px;padding:14px 16px;text-align:center;">
+          <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Margem Líquida %</div>
+          <div style="font-family:var(--font-head);font-size:22px;font-weight:800;" id="calc-r-margem">—</div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;text-align:center;">
+          <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Lucro no Frete</div>
+          <div style="font-family:var(--font-head);font-size:20px;font-weight:800;" id="calc-r-frete">—</div>
+        </div>
+      </div>
+      <div id="calc-breakdown" style="margin-top:16px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;font-size:12px;color:var(--muted);line-height:1.9;"></div>
+    </div>
+  </div>
+</div>
+</div>
+
 </body>
 </html>
