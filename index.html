@@ -953,7 +953,7 @@ function renderDashboard(){
   const dias=Object.keys(byDay).sort((a,b)=>a.localeCompare(b));
   destroyChart('fatLucro');
   const c1=document.getElementById('chart-fatLucro');
-  if(c1){charts.fatLucro=new Chart(c1,{type:'bar',data:{labels:dias,datasets:[{label:'Faturamento',data:dias.map(d=>byDay[d].fat),backgroundColor:'rgba(0,180,216,0.7)',borderColor:'#00b4d8',borderWidth:1},{label:'Lucro',data:dias.map(d=>byDay[d].lucro),backgroundColor:'rgba(0,200,150,0.7)',borderColor:'#00c896',borderWidth:1}]},options:{...chartOpts,plugins:{...chartOpts.plugins,legend:{display:true,labels:{color:'#e8eaf6',font:{family:'DM Sans',size:11}}},datalabels:{color:'#fff',anchor:'end',align:'top',font:{weight:'bold',size:10},formatter:(v)=>v>0?'R$'+v.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,'.'):''}}}});}
+  if(c1){charts.fatLucro=new Chart(c1,{type:'bar',data:{labels:dias,datasets:[{label:'Faturamento',data:dias.map(d=>byDay[d].fat),backgroundColor:'rgba(0,180,216,0.7)',borderColor:'#00b4d8',borderWidth:1},{label:'Lucro',data:dias.map(d=>byDay[d].lucro),backgroundColor:'rgba(0,200,150,0.7)',borderColor:'#00c896',borderWidth:1}]},options:{...chartOpts,plugins:{...chartOpts.plugins,legend:{display:true,labels:{color:'#e8eaf6',font:{family:'DM Sans',size:11}}},datalabels:{color:'#fff',anchor:'center',align:'center',font:{weight:'bold',size:11},formatter:(v)=>v>0?'R$'+v.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,'.'):''}}}});}
 
   // 2. Top 6 produtos
   const byProd={};
@@ -974,14 +974,14 @@ function renderDashboard(){
   const desQtdKeys=Object.keys(byDesQtd).sort((a,b)=>byDesQtd[b]-byDesQtd[a]);
   destroyChart('designer-qtd');
   const c4=document.getElementById('chart-designer-qtd');
-  if(c4)charts['designer-qtd']=new Chart(c4,{type:'bar',data:{labels:desQtdKeys,datasets:[{label:'Pedidos',data:desQtdKeys.map(k=>byDesQtd[k]),backgroundColor:'rgba(0,180,216,0.7)',borderColor:'#00b4d8',borderWidth:1}]},options:{...chartOpts,plugins:{...chartOpts.plugins,legend:{display:false},datalabels:{color:'#fff',anchor:'end',align:'top',font:{weight:'bold',size:11},formatter:(v)=>v}}}});
+  if(c4)charts['designer-qtd']=new Chart(c4,{type:'bar',data:{labels:desQtdKeys,datasets:[{label:'Pedidos',data:desQtdKeys.map(k=>byDesQtd[k]),backgroundColor:'rgba(0,180,216,0.7)',borderColor:'#00b4d8',borderWidth:1}]},options:{...chartOpts,plugins:{...chartOpts.plugins,legend:{display:false},datalabels:{color:'#fff',anchor:'center',align:'center',font:{weight:'bold',size:13},formatter:(v)=>v}}}});
 
   // 5. Designer despesa
   const byDesDesp={};data.forEach(v=>{if(v.designer&&v.despesaDesigner)byDesDesp[v.designer]=(byDesDesp[v.designer]||0)+(v.despesaDesigner||0);});
   const desDespKeys=Object.keys(byDesDesp).sort((a,b)=>byDesDesp[b]-byDesDesp[a]);
   destroyChart('designer-desp');
   const c5=document.getElementById('chart-designer-desp');
-  if(c5)charts['designer-desp']=new Chart(c5,{type:'bar',data:{labels:desDespKeys,datasets:[{label:'Despesa (R$)',data:desDespKeys.map(k=>byDesDesp[k]),backgroundColor:'rgba(168,85,247,0.7)',borderColor:'#a855f7',borderWidth:1}]},options:{...chartOpts,plugins:{...chartOpts.plugins,legend:{display:false},datalabels:{color:'#fff',anchor:'end',align:'top',font:{weight:'bold',size:11},formatter:(v)=>'R$'+v.toFixed(0)}}}});
+  if(c5)charts['designer-desp']=new Chart(c5,{type:'bar',data:{labels:desDespKeys,datasets:[{label:'Despesa (R$)',data:desDespKeys.map(k=>byDesDesp[k]),backgroundColor:'rgba(168,85,247,0.7)',borderColor:'#a855f7',borderWidth:1}]},options:{...chartOpts,plugins:{...chartOpts.plugins,legend:{display:false},datalabels:{color:'#fff',anchor:'center',align:'center',font:{weight:'bold',size:13},formatter:(v)=>'R$'+v.toFixed(0)}}}});
 
   // 6. Status
   const bySt={};data.forEach(v=>{if(v.status)bySt[v.status]=(bySt[v.status]||0)+1;});
